@@ -232,9 +232,13 @@ const JoinsSimulator: React.FC<{ onBack: () => void }> = ({ onBack }) => {
         // Initial measure
         updateCoords();
 
-        // Re-measure on resize or join type change (though rows don't change, layout might)
-        window.addEventListener('resize', updateCoords);
-        return () => window.removeEventListener('resize', updateCoords);
+        // Use ResizeObserver to handle all layout changes (window resize, zoom, dynamic content)
+        const observer = new ResizeObserver(updateCoords);
+        if (containerRef.current) {
+            observer.observe(containerRef.current);
+        }
+
+        return () => observer.disconnect();
     }, [tableA, tableB, joinType]);
 
     return (
