@@ -44,7 +44,7 @@ const sqlLines = [
     { id: 17, text: "SELECT * FROM BOM_Hierarchy;" }
 ];
 
-const CTESimulator = ({ onBack }: { onBack: () => void }) => {
+const CTESimulator: React.FC<{ onBack: () => void }> = ({ onBack }) => {
     // State
     const [currentStep, setCurrentStep] = useState(0);
     const [results, setResults] = useState<ResultRow[]>([]);

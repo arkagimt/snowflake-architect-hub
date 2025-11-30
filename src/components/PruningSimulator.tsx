@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-const PruningSimulator = ({ onBack }: { onBack: () => void }) => {
+const PruningSimulator: React.FC<{ onBack: () => void }> = ({ onBack }) => {
     const [queryDate, setQueryDate] = useState('2024-01-15');
     const [isScanning, setIsScanning] = useState(false);
     const [scanComplete, setScanComplete] = useState(false);

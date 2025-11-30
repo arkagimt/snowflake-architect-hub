@@ -4,7 +4,7 @@ import BridgeTableVisualizer from './BridgeTableVisualizer';
 import DBTLayersViz from './DBTLayersViz';
 import SnowflakePatternsViz from './SnowflakePatternsViz';
 
-const ModelingSimulator = ({ onBack }: { onBack: () => void }) => {
+const ModelingSimulator: React.FC<{ onBack: () => void }> = ({ onBack }) => {
     const [activeTab, setActiveTab] = useState<'obt' | 'bridge' | 'dbt' | 'snowflake'>('obt');
 
     useEffect(() => {

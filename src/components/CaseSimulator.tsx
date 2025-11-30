@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-const CaseSimulator = ({ onBack }: { onBack: () => void }) => {
+const CaseSimulator: React.FC<{ onBack: () => void }> = ({ onBack }) => {
     const [activeTab, setActiveTab] = useState<'nvl' | 'coalesce' | 'arithmetic' | 'aggregate'>('nvl');
 
     // Keyboard shortcuts

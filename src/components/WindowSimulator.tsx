@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-const WindowSimulator = ({ onBack }: { onBack: () => void }) => {
+const WindowSimulator: React.FC<{ onBack: () => void }> = ({ onBack }) => {
     const [windowFunc, setWindowFunc] = useState<'row_number' | 'rank' | 'dense_rank' | 'lead' | 'lag'>('row_number');
     const [usePartition, setUsePartition] = useState(false);
     const [sortedData, setSortedData] = useState<any[]>([]);

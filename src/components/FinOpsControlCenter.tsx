@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-const FinOpsControlCenter = () => {
+const FinOpsControlCenter: React.FC<{ onBack?: () => void }> = ({ onBack }) => {
     // Cost Engine State
     const [warehouseSize, setWarehouseSize] = useState(1); // $/hr
     const [isProcessing, setIsProcessing] = useState(false);
@@ -38,7 +38,7 @@ const FinOpsControlCenter = () => {
 
     // Real-time cost ticker
     useEffect(() => {
-        let interval: NodeJS.Timeout;
+        let interval: ReturnType<typeof setInterval>;
         if (isProcessing || isIdleBilling) {
             interval = setInterval(() => {
                 const rate = serverlessMode ? warehouseSize * 1.25 : warehouseSize;
@@ -126,9 +126,17 @@ const FinOpsControlCenter = () => {
     };
 
     return (
-        <div className={`h-full p-6 overflow-y-auto transition-all ${budgetExceeded ? 'ring-4 ring-red-500 animate-pulse' : ''
-            }`}>
+        <div className={`h-full p-6 overflow-y-auto transition-all ${budgetExceeded ? 'ring-4 ring-red-500 animate-pulse' : ''}`}>
             <div className="max-w-6xl mx-auto">
+
+                {/* Back Button */}
+                {onBack && (
+                    <div className="mb-4">
+                        <button onClick={onBack} className="flex items-center gap-2 text-slate-400 hover:text-white transition">
+                            <span>←</span> Back
+                        </button>
+                    </div>
+                )}
 
                 {/* Budget Alert */}
                 {budgetExceeded && (
@@ -159,12 +167,10 @@ const FinOpsControlCenter = () => {
                                 <span className="text-sm text-slate-300">Serverless Mode</span>
                                 <button
                                     onClick={() => setServerlessMode(!serverlessMode)}
-                                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${serverlessMode ? 'bg-cyan-600' : 'bg-slate-600'
-                                        }`}
+                                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${serverlessMode ? 'bg-cyan-600' : 'bg-slate-600'}`}
                                 >
                                     <span
-                                        className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${serverlessMode ? 'translate-x-6' : 'translate-x-1'
-                                            }`}
+                                        className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${serverlessMode ? 'translate-x-6' : 'translate-x-1'}`}
                                     />
                                 </button>
                             </div>
@@ -206,8 +212,7 @@ const FinOpsControlCenter = () => {
                                         onClick={() => setSelectedAlgorithm('hash')}
                                         className={`p-3 rounded-lg border transition ${selectedAlgorithm === 'hash'
                                             ? 'bg-green-900/30 border-green-500 text-green-400'
-                                            : 'bg-slate-800 border-slate-700 text-slate-400'
-                                            }`}
+                                            : 'bg-slate-800 border-slate-700 text-slate-400'}`}
                                     >
                                         <div className="font-bold">Hash Join</div>
                                         <div className="text-xs">O(N) - Fast</div>
@@ -216,8 +221,7 @@ const FinOpsControlCenter = () => {
                                         onClick={() => setSelectedAlgorithm('bruteforce')}
                                         className={`p-3 rounded-lg border transition ${selectedAlgorithm === 'bruteforce'
                                             ? 'bg-red-900/30 border-red-500 text-red-400'
-                                            : 'bg-slate-800 border-slate-700 text-slate-400'
-                                            }`}
+                                            : 'bg-slate-800 border-slate-700 text-slate-400'}`}
                                     >
                                         <div className="font-bold">Nested Loop</div>
                                         <div className="text-xs">O(N²) - Slow</div>
@@ -234,8 +238,7 @@ const FinOpsControlCenter = () => {
                                     </div>
                                     <div className="h-3 bg-slate-800 rounded-full overflow-hidden">
                                         <div
-                                            className={`h-full transition-all ${selectedAlgorithm === 'hash' ? 'bg-green-500' : 'bg-red-500'
-                                                }`}
+                                            className={`h-full transition-all ${selectedAlgorithm === 'hash' ? 'bg-green-500' : 'bg-red-500'}`}
                                             style={{ width: `${(processedRows / 1000000) * 100}%` }}
                                         />
                                     </div>
@@ -247,8 +250,7 @@ const FinOpsControlCenter = () => {
                                 <button
                                     onClick={runProcessing}
                                     disabled={isProcessing || isIdleBilling}
-                                    className={`flex-1 py-3 rounded-lg font-bold transition ${isProcessing || isIdleBilling ? 'bg-yellow-600 animate-pulse' : 'bg-emerald-600 hover:bg-emerald-500'
-                                        } text-white`}
+                                    className={`flex-1 py-3 rounded-lg font-bold transition ${isProcessing || isIdleBilling ? 'bg-yellow-600 animate-pulse' : 'bg-emerald-600 hover:bg-emerald-500'} text-white`}
                                 >
                                     {isProcessing ? '⚙️ Processing...' : isIdleBilling ? '💤 Idle Billing...' : '▶ Run Query'}
                                 </button>
@@ -276,8 +278,7 @@ const FinOpsControlCenter = () => {
                                 <span className="text-slate-400">Max Budget ($)</span>
                                 <div className={`ml-auto px-3 py-1 rounded-lg text-sm font-bold ${cost > maxBudget ? 'bg-red-600 text-white' :
                                     cost > maxBudget * 0.8 ? 'bg-yellow-600 text-white' :
-                                        'bg-green-600 text-white'
-                                    }`}>
+                                        'bg-green-600 text-white'}`}>
                                     {((cost / maxBudget) * 100).toFixed(0)}% used
                                 </div>
                             </div>
@@ -298,8 +299,7 @@ const FinOpsControlCenter = () => {
                                     onClick={() => setBiMode('import')}
                                     className={`flex-1 p-3 rounded-lg font-semibold transition ${biMode === 'import'
                                         ? 'bg-green-600 text-white'
-                                        : 'bg-slate-800 text-slate-400'
-                                        }`}
+                                        : 'bg-slate-800 text-slate-400'}`}
                                 >
                                     📄 Import Mode
                                 </button>
@@ -307,8 +307,7 @@ const FinOpsControlCenter = () => {
                                     onClick={() => setBiMode('directquery')}
                                     className={`flex-1 p-3 rounded-lg font-semibold transition ${biMode === 'directquery'
                                         ? 'bg-orange-600 text-white'
-                                        : 'bg-slate-800 text-slate-400'
-                                        }`}
+                                        : 'bg-slate-800 text-slate-400'}`}
                                 >
                                     ⚡ DirectQuery
                                 </button>
@@ -318,8 +317,7 @@ const FinOpsControlCenter = () => {
                             <div className="relative bg-slate-800 rounded-xl p-6 mb-4">
                                 <div className="flex items-center justify-around">
                                     {/* Power BI Icon */}
-                                    <div className={`w-20 h-20 rounded-xl flex items-center justify-center transition-all ${biMode === 'import' ? 'bg-green-900/50 border-2 border-green-500' : 'bg-orange-900/50 border-2 border-orange-500'
-                                        }`}>
+                                    <div className={`w-20 h-20 rounded-xl flex items-center justify-center transition-all ${biMode === 'import' ? 'bg-green-900/50 border-2 border-green-500' : 'bg-orange-900/50 border-2 border-orange-500'}`}>
                                         <span className="text-3xl">📊</span>
                                         {biMode === 'import' && (
                                             <div className="absolute -bottom-2 text-xs bg-green-600 px-2 rounded text-white">VertiPaq</div>
@@ -339,8 +337,7 @@ const FinOpsControlCenter = () => {
                                     {/* Snowflake Icon */}
                                     <div className={`w-20 h-20 rounded-xl flex items-center justify-center transition-all ${warehouseWoken
                                         ? 'bg-red-900/50 border-2 border-red-500 animate-pulse shadow-lg shadow-red-500/30'
-                                        : 'bg-cyan-900/50 border-2 border-cyan-500'
-                                        }`}>
+                                        : 'bg-cyan-900/50 border-2 border-cyan-500'}`}>
                                         <span className="text-3xl">❄️</span>
                                     </div>
                                 </div>

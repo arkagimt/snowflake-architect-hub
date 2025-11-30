@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 
-const JoinsSimulator = ({ onBack }: { onBack: () => void }) => {
+const JoinsSimulator: React.FC<{ onBack: () => void }> = ({ onBack }) => {
     const [joinType, setJoinType] = useState<'inner' | 'left' | 'right' | 'full' | 'cross'>('inner');
     const [highlightValue, setHighlightValue] = useState<string | null>(null);
     const containerRef = useRef<HTMLDivElement>(null);

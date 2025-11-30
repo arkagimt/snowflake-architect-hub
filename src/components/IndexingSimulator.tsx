@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import SnowflakeClusteringViz from './SnowflakeClusteringViz';
 import FinOpsControlCenter from './FinOpsControlCenter';
 
-const IndexingSimulator = ({ onBack }: { onBack: () => void }) => {
+const IndexingSimulator: React.FC<{ onBack: () => void }> = ({ onBack }) => {
     const [activeTab, setActiveTab] = useState<'tsql' | 'snowflake' | 'comparison' | 'finops'>('tsql');
     const [indexType, setIndexType] = useState<'heap' | 'clustered' | 'nonclustered' | 'covering'>('heap');
     const [searchId, setSearchId] = useState<number | null>(null);

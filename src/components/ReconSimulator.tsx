@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-const ReconSimulator = ({ onBack }: { onBack: () => void }) => {
+const ReconSimulator: React.FC<{ onBack: () => void }> = ({ onBack }) => {
     // Source table state
     const [sourceRows, setSourceRows] = useState([
         { id: 1, name: 'BLOCK-ASM', quantity: 100, status: 'Active' },

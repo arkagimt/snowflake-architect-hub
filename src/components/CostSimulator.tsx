@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-const CostSimulator = ({ onBack }: { onBack: () => void }) => {
+const CostSimulator: React.FC<{ onBack: () => void }> = ({ onBack }) => {
     const [activeTab, setActiveTab] = useState<'snowflake' | 'matillion' | 'powerbi'>('snowflake');
 
     useEffect(() => {
@@ -93,7 +93,7 @@ const SnowflakeComputeTab = () => {
     const effectiveRate = isServerless ? warehouseSize * 1.25 : warehouseSize;
 
     useEffect(() => {
-        let interval: NodeJS.Timeout;
+        let interval: ReturnType<typeof setInterval>;
         if (isRunning || isIdle) {
             interval = setInterval(() => {
                 if (!isServerless || isRunning) {
@@ -355,7 +355,7 @@ const MatillionCostTab = () => {
 
     // Self-hosted always ticks (EC2 always on)
     useEffect(() => {
-        let interval: NodeJS.Timeout;
+        let interval: ReturnType<typeof setInterval>;
         if (mode === 'self-hosted') {
             interval = setInterval(() => {
                 setCost(prev => prev + (selfHostedRate + matillionLicense) / 3600);
@@ -374,7 +374,7 @@ const MatillionCostTab = () => {
 
     // SaaS only when running
     useEffect(() => {
-        let interval: NodeJS.Timeout;
+        let interval: ReturnType<typeof setInterval>;
         if (mode === 'saas' && isRunning) {
             interval = setInterval(() => {
                 setCost(prev => prev + saasRate / 3600);
