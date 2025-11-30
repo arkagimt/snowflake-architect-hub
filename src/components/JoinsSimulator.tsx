@@ -194,10 +194,48 @@ const JoinsSimulator: React.FC<{ onBack: () => void }> = ({ onBack }) => {
         return () => window.removeEventListener('keydown', handleKeyDown);
     }, []);
 
-    // Row height for calculating line positions
-    const ROW_HEIGHT = 40; // h-10 = 40px
-    const ROW_GAP = 8;     // space-y-2 = 8px
-    const START_Y = 77;    // Precise offset from browser inspection
+    // Dynamic line positioning
+    const [rowCoordsA, setRowCoordsA] = useState<Record<number, number>>({});
+    const [rowCoordsB, setRowCoordsB] = useState<Record<number, number>>({});
+
+    useEffect(() => {
+        const updateCoords = () => {
+            if (!containerRef.current) return;
+
+            const newCoordsA: Record<number, number> = {};
+            const newCoordsB: Record<number, number> = {};
+            const containerRect = containerRef.current.getBoundingClientRect();
+
+            // Measure Table A rows
+            tableA.forEach((_, idx) => {
+                const el = containerRef.current?.querySelector(`[data-row-a="${idx}"]`);
+                if (el) {
+                    const rect = el.getBoundingClientRect();
+                    // Calculate center Y relative to the container top
+                    newCoordsA[idx] = rect.top - containerRect.top + rect.height / 2;
+                }
+            });
+
+            // Measure Table B rows
+            tableB.forEach((_, idx) => {
+                const el = containerRef.current?.querySelector(`[data-row-b="${idx}"]`);
+                if (el) {
+                    const rect = el.getBoundingClientRect();
+                    newCoordsB[idx] = rect.top - containerRect.top + rect.height / 2;
+                }
+            });
+
+            setRowCoordsA(newCoordsA);
+            setRowCoordsB(newCoordsB);
+        };
+
+        // Initial measure
+        updateCoords();
+
+        // Re-measure on resize or join type change (though rows don't change, layout might)
+        window.addEventListener('resize', updateCoords);
+        return () => window.removeEventListener('resize', updateCoords);
+    }, [tableA, tableB, joinType]);
 
     return (
         <div className="flex flex-col h-screen w-full bg-slate-950 text-slate-200 overflow-hidden">
@@ -278,11 +316,16 @@ const JoinsSimulator: React.FC<{ onBack: () => void }> = ({ onBack }) => {
                                 </div>
 
                                 {/* Connection Lines Area */}
-                                <div className="flex-1 relative" style={{ minHeight: `${tableA.length * (ROW_HEIGHT + ROW_GAP)}px` }}>
+                                <div className="flex-1 relative" style={{ minHeight: `${tableA.length * 48}px` }}>
                                     <svg className="absolute inset-0 w-full h-full overflow-visible">
                                         {matches.map((match, idx) => {
-                                            const y1 = match.aIdx * (ROW_HEIGHT + ROW_GAP) + ROW_HEIGHT / 2 + START_Y;
-                                            const y2 = match.bIdx * (ROW_HEIGHT + ROW_GAP) + ROW_HEIGHT / 2 + START_Y;
+                                            // Use dynamic coordinates if available, else fallback to 0 (hidden)
+                                            const y1 = rowCoordsA[match.aIdx] || 0;
+                                            const y2 = rowCoordsB[match.bIdx] || 0;
+
+                                            // Don't render if coords aren't ready
+                                            if (!y1 || !y2) return null;
+
                                             const color = getValueColor(match.value === 'null' ? 'NULL' : match.value, 'line');
                                             const isHighlighted = highlightValue === match.value || highlightValue === (match.value === 'null' ? 'NULL' : match.value);
 
@@ -339,8 +382,11 @@ const JoinsSimulator: React.FC<{ onBack: () => void }> = ({ onBack }) => {
                                         {/* NULL vs Value Animation */}
                                         {nullValueAnim && joinType === 'inner' && (
                                             (() => {
-                                                const y1 = nullValueAnim.nullIdx * (ROW_HEIGHT + ROW_GAP) + ROW_HEIGHT / 2 + START_Y;
-                                                const y2 = nullValueAnim.valueIdx * (ROW_HEIGHT + ROW_GAP) + ROW_HEIGHT / 2 + START_Y;
+                                                const y1 = rowCoordsA[nullValueAnim.nullIdx] || 0;
+                                                const y2 = rowCoordsB[nullValueAnim.valueIdx] || 0;
+
+                                                if (!y1 || !y2) return null;
+
                                                 const midY = (y1 + y2) / 2;
                                                 const progress = nullValueAnim.progress;
 
@@ -746,8 +792,8 @@ CROSS JOIN TableB B;
                         )}
                     </div>
                 </div>
-            </div>
-        </div>
+            </div >
+        </div >
     );
 };
 
