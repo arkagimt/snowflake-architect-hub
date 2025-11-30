@@ -197,7 +197,7 @@ const JoinsSimulator: React.FC<{ onBack: () => void }> = ({ onBack }) => {
     // Row height for calculating line positions
     const ROW_HEIGHT = 40; // h-10 = 40px
     const ROW_GAP = 8;     // space-y-2 = 8px
-    const HEADER_HEIGHT = 48; // text-sm (20) + text-xs (16) + mb-3 (12) = 48px
+    const START_Y = 77;    // Precise offset from browser inspection
 
     return (
         <div className="flex flex-col h-screen w-full bg-slate-950 text-slate-200 overflow-hidden">
@@ -281,8 +281,8 @@ const JoinsSimulator: React.FC<{ onBack: () => void }> = ({ onBack }) => {
                                 <div className="flex-1 relative" style={{ minHeight: `${tableA.length * (ROW_HEIGHT + ROW_GAP)}px` }}>
                                     <svg className="absolute inset-0 w-full h-full overflow-visible">
                                         {matches.map((match, idx) => {
-                                            const y1 = match.aIdx * (ROW_HEIGHT + ROW_GAP) + ROW_HEIGHT / 2 + HEADER_HEIGHT;
-                                            const y2 = match.bIdx * (ROW_HEIGHT + ROW_GAP) + ROW_HEIGHT / 2 + HEADER_HEIGHT;
+                                            const y1 = match.aIdx * (ROW_HEIGHT + ROW_GAP) + ROW_HEIGHT / 2 + START_Y;
+                                            const y2 = match.bIdx * (ROW_HEIGHT + ROW_GAP) + ROW_HEIGHT / 2 + START_Y;
                                             const color = getValueColor(match.value === 'null' ? 'NULL' : match.value, 'line');
                                             const isHighlighted = highlightValue === match.value || highlightValue === (match.value === 'null' ? 'NULL' : match.value);
 
@@ -339,8 +339,8 @@ const JoinsSimulator: React.FC<{ onBack: () => void }> = ({ onBack }) => {
                                         {/* NULL vs Value Animation */}
                                         {nullValueAnim && joinType === 'inner' && (
                                             (() => {
-                                                const y1 = nullValueAnim.nullIdx * (ROW_HEIGHT + ROW_GAP) + ROW_HEIGHT / 2 + HEADER_HEIGHT;
-                                                const y2 = nullValueAnim.valueIdx * (ROW_HEIGHT + ROW_GAP) + ROW_HEIGHT / 2 + HEADER_HEIGHT;
+                                                const y1 = nullValueAnim.nullIdx * (ROW_HEIGHT + ROW_GAP) + ROW_HEIGHT / 2 + START_Y;
+                                                const y2 = nullValueAnim.valueIdx * (ROW_HEIGHT + ROW_GAP) + ROW_HEIGHT / 2 + START_Y;
                                                 const midY = (y1 + y2) / 2;
                                                 const progress = nullValueAnim.progress;
 
