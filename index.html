@@ -9,6 +9,21 @@
   <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script>
+    window.process = { env: { NODE_ENV: 'development' } };
+    window.onerror = function (msg, url, line, col, error) {
+      var div = document.createElement('div');
+      div.style = "position: fixed; top: 0; left: 0; width: 100%; background: #990000; color: white; padding: 20px; z-index: 9999; font-family: monospace; white-space: pre-wrap;";
+      div.innerText = "Runtime Error:\n" + msg + "\nLine: " + line + ":" + col + "\n" + (error ? error.stack : "");
+      document.body.appendChild(div);
+    };
+    window.addEventListener('unhandledrejection', function (event) {
+      var div = document.createElement('div');
+      div.style = "position: fixed; top: 50%; left: 0; width: 100%; background: #990000; color: white; padding: 20px; z-index: 9999; font-family: monospace; white-space: pre-wrap;";
+      div.innerText = "Unhandled Promise Rejection:\n" + event.reason;
+      document.body.appendChild(div);
+    });
+  </script>
 </head>
 
 <body>
@@ -798,8 +813,8 @@
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id as any)}
                   className={`px-4 py-2 rounded-lg text-sm font-semibold transition flex items-center gap-2 ${activeTab === tab.id
-                      ? 'bg-purple-600 text-white shadow-lg shadow-purple-500/30'
-                      : 'bg-slate-800 text-slate-400 hover:text-white hover:bg-slate-700'
+                    ? 'bg-purple-600 text-white shadow-lg shadow-purple-500/30'
+                    : 'bg-slate-800 text-slate-400 hover:text-white hover:bg-slate-700'
                     }`}
                 >
                   <span>{tab.icon}</span>
@@ -899,8 +914,8 @@
                   onClick={denormalize}
                   disabled={isAnimating || isOBT}
                   className={`px-5 py-2 rounded-lg font-semibold transition flex items-center gap-2 ${isAnimating ? 'bg-yellow-600 text-white animate-pulse' :
-                      isOBT ? 'bg-green-600 text-white cursor-default' :
-                        'bg-purple-600 hover:bg-purple-500 text-white'
+                    isOBT ? 'bg-green-600 text-white cursor-default' :
+                      'bg-purple-600 hover:bg-purple-500 text-white'
                     }`}
                 >
                   {isAnimating ? (
@@ -1236,8 +1251,8 @@
                   onClick={addBridge}
                   disabled={isAnimating || hasBridge}
                   className={`px-5 py-2 rounded-lg font-semibold transition flex items-center gap-2 ${isAnimating ? 'bg-yellow-600 text-white animate-pulse' :
-                      hasBridge ? 'bg-green-600 text-white cursor-default' :
-                        'bg-cyan-600 hover:bg-cyan-500 text-white'
+                    hasBridge ? 'bg-green-600 text-white cursor-default' :
+                      'bg-cyan-600 hover:bg-cyan-500 text-white'
                     }`}
                 >
                   {isAnimating ? (
@@ -1278,8 +1293,8 @@
                             key={emp.id}
                             onClick={() => hasBridge && setSelectedEmployee(isSelected ? null : emp.id)}
                             className={`p-3 rounded-lg transition cursor-pointer ${isSelected ? 'bg-blue-500/30 border border-blue-400' :
-                                hasConnection ? 'bg-slate-800 hover:bg-slate-700' :
-                                  'bg-slate-800/50'
+                              hasConnection ? 'bg-slate-800 hover:bg-slate-700' :
+                                'bg-slate-800/50'
                               }`}
                           >
                             <div className="flex justify-between items-center">
@@ -1562,8 +1577,8 @@ SELECT * FROM final`
                     key={key}
                     onClick={() => setActiveLayer(key as any)}
                     className={`w-full p-4 rounded-xl text-left transition ${activeLayer === key
-                        ? `bg-${layer.color}-500/20 border-2 border-${layer.color}-500`
-                        : 'bg-slate-800 border-2 border-slate-700 hover:border-slate-600'
+                      ? `bg-${layer.color}-500/20 border-2 border-${layer.color}-500`
+                      : 'bg-slate-800 border-2 border-slate-700 hover:border-slate-600'
                       }`}
                   >
                     <div className={`font-bold ${activeLayer === key ? `text-${layer.color}-400` : 'text-white'}`}>
@@ -1806,8 +1821,8 @@ CREATE TABLE backup CLONE source
                     onClick={runReclustering}
                     disabled={isAnimating || isClustered}
                     className={`px-4 py-2 rounded-lg font-semibold transition flex items-center gap-2 ${isAnimating ? 'bg-yellow-600 text-white animate-pulse' :
-                        isClustered ? 'bg-green-600 text-white cursor-default' :
-                          'bg-cyan-600 hover:bg-cyan-500 text-white'
+                      isClustered ? 'bg-green-600 text-white cursor-default' :
+                        'bg-cyan-600 hover:bg-cyan-500 text-white'
                       }`}
                   >
                     {isAnimating ? (
@@ -1933,8 +1948,8 @@ CREATE TABLE backup CLONE source
                         key={date}
                         onClick={() => setSearchDate(date)}
                         className={`px-3 py-2 rounded-lg text-sm font-mono transition ${searchDate === date
-                            ? 'bg-yellow-500 text-slate-900 font-bold'
-                            : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
+                          ? 'bg-yellow-500 text-slate-900 font-bold'
+                          : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
                           }`}
                       >
                         Day {date}
@@ -1947,8 +1962,8 @@ CREATE TABLE backup CLONE source
                       <div className="flex justify-between items-center mb-2">
                         <span className="text-sm text-slate-400">Partitions Scanned:</span>
                         <span className={`text-lg font-bold ${scannedPartitions.length <= 1 ? 'text-green-400' :
-                            scannedPartitions.length <= 3 ? 'text-yellow-400' :
-                              'text-red-400'
+                          scannedPartitions.length <= 3 ? 'text-yellow-400' :
+                            'text-red-400'
                           }`}>
                           {scannedPartitions.length} / {currentData.length}
                         </span>
@@ -1956,8 +1971,8 @@ CREATE TABLE backup CLONE source
                       <div className="flex justify-between items-center mb-2">
                         <span className="text-sm text-slate-400">Pruning Efficiency:</span>
                         <span className={`text-lg font-bold ${pruningEfficiency >= 80 ? 'text-green-400' :
-                            pruningEfficiency >= 50 ? 'text-yellow-400' :
-                              'text-red-400'
+                          pruningEfficiency >= 50 ? 'text-yellow-400' :
+                            'text-red-400'
                           }`}>
                           {pruningEfficiency}%
                         </span>
@@ -1966,8 +1981,8 @@ CREATE TABLE backup CLONE source
                       <div className="h-2 bg-slate-700 rounded-full overflow-hidden">
                         <div
                           className={`h-full transition-all duration-500 ${pruningEfficiency >= 80 ? 'bg-green-500' :
-                              pruningEfficiency >= 50 ? 'bg-yellow-500' :
-                                'bg-red-500'
+                            pruningEfficiency >= 50 ? 'bg-yellow-500' :
+                              'bg-red-500'
                             }`}
                           style={{ width: `${pruningEfficiency}%` }}
                         />
@@ -2374,8 +2389,8 @@ WHERE query_acceleration_bytes_scanned > 0;`,
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id as any)}
                   className={`px-4 py-2 rounded-lg text-sm font-semibold transition flex items-center gap-2 ${activeTab === tab.id
-                      ? 'bg-green-600 text-white shadow-lg shadow-green-500/30'
-                      : 'bg-slate-800 text-slate-400 hover:text-white hover:bg-slate-700'
+                    ? 'bg-green-600 text-white shadow-lg shadow-green-500/30'
+                    : 'bg-slate-800 text-slate-400 hover:text-white hover:bg-slate-700'
                     }`}
                 >
                   <span>{tab.icon}</span>
@@ -2407,11 +2422,11 @@ WHERE query_acceleration_bytes_scanned > 0;`,
                         key={type.id}
                         onClick={() => { setIndexType(type.id as any); setSearchSteps([]); setSearchId(null); }}
                         className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition ${indexType === type.id
-                            ? type.color === 'red' ? 'bg-red-600 text-white' :
-                              type.color === 'green' ? 'bg-green-600 text-white' :
-                                type.color === 'blue' ? 'bg-blue-600 text-white' :
-                                  'bg-purple-600 text-white'
-                            : 'bg-slate-800 text-slate-400'
+                          ? type.color === 'red' ? 'bg-red-600 text-white' :
+                            type.color === 'green' ? 'bg-green-600 text-white' :
+                              type.color === 'blue' ? 'bg-blue-600 text-white' :
+                                'bg-purple-600 text-white'
+                          : 'bg-slate-800 text-slate-400'
                           }`}
                       >
                         {type.label}
@@ -2466,10 +2481,10 @@ WHERE query_acceleration_bytes_scanned > 0;`,
                       <div className="grid grid-cols-4 gap-2">
                         {sampleData.map((row, idx) => (
                           <div key={row.id} className={`p-2 rounded border text-xs ${searchSteps.some(s => s.includes(`ID = ${row.id}`) && s.includes('FOUND'))
-                              ? 'border-green-500 bg-green-900/30'
-                              : searchSteps.some(s => s.includes(`ID = ${row.id}`))
-                                ? 'border-yellow-500 bg-yellow-900/20'
-                                : 'border-slate-700 bg-slate-800'
+                            ? 'border-green-500 bg-green-900/30'
+                            : searchSteps.some(s => s.includes(`ID = ${row.id}`))
+                              ? 'border-yellow-500 bg-yellow-900/20'
+                              : 'border-slate-700 bg-slate-800'
                             }`}>
                             <div className="text-slate-400">ID: {row.id}</div>
                             <div className="text-white truncate">{row.name}</div>
@@ -2504,9 +2519,9 @@ WHERE query_acceleration_bytes_scanned > 0;`,
                       <div className="space-y-1 mono text-xs">
                         {searchSteps.map((step, idx) => (
                           <div key={idx} className={`py-1 animate-slide ${step.includes('Γ£ô') ? 'text-green-400' :
-                              step.includes('Γ£ù') ? 'text-red-400' :
-                                step.includes('Complexity') ? 'text-cyan-400 font-bold' :
-                                  'text-slate-400'
+                            step.includes('Γ£ù') ? 'text-red-400' :
+                              step.includes('Complexity') ? 'text-cyan-400 font-bold' :
+                                'text-slate-400'
                             }`}>
                             {step}
                           </div>
@@ -2825,8 +2840,8 @@ WHERE query_acceleration_bytes_scanned > 0;`,
                       <button
                         onClick={() => setSelectedAlgorithm('hash')}
                         className={`flex-1 p-3 rounded-lg font-semibold transition ${selectedAlgorithm === 'hash'
-                            ? 'bg-green-600 text-white'
-                            : 'bg-slate-800 text-slate-400'
+                          ? 'bg-green-600 text-white'
+                          : 'bg-slate-800 text-slate-400'
                           }`}
                       >
                         O(N) Hash Join
@@ -2834,8 +2849,8 @@ WHERE query_acceleration_bytes_scanned > 0;`,
                       <button
                         onClick={() => setSelectedAlgorithm('bruteforce')}
                         className={`flex-1 p-3 rounded-lg font-semibold transition ${selectedAlgorithm === 'bruteforce'
-                            ? 'bg-red-600 text-white'
-                            : 'bg-slate-800 text-slate-400'
+                          ? 'bg-red-600 text-white'
+                          : 'bg-slate-800 text-slate-400'
                           }`}
                       >
                         O(N┬▓) Brute Force
@@ -2859,16 +2874,16 @@ WHERE query_acceleration_bytes_scanned > 0;`,
 
                   {/* Big Cost Display */}
                   <div className={`text-center p-6 rounded-xl mb-4 transition-all ${isIdleBilling ? 'bg-red-900/30 border-2 border-red-500' :
-                      isProcessing ? 'bg-green-900/30 border-2 border-green-500' :
-                        'bg-slate-800 border-2 border-slate-700'
+                    isProcessing ? 'bg-green-900/30 border-2 border-green-500' :
+                      'bg-slate-800 border-2 border-slate-700'
                     }`}>
                     <div className="text-xs text-slate-500 uppercase mb-1">
                       {isIdleBilling ? '≡ƒö┤ IDLE TIME BILLING (WASTE)' :
                         isProcessing ? '≡ƒƒó PROCESSING' : 'WAITING'}
                     </div>
                     <div className={`text-5xl font-bold font-mono ${budgetExceeded ? 'text-red-400' :
-                        isIdleBilling ? 'text-red-400' :
-                          'text-emerald-400'
+                      isIdleBilling ? 'text-red-400' :
+                        'text-emerald-400'
                       }`}>
                       ${cost.toFixed(4)}
                     </div>
@@ -2928,8 +2943,8 @@ WHERE query_acceleration_bytes_scanned > 0;`,
                     />
                     <span className="text-slate-400">Max Budget ($)</span>
                     <div className={`ml-auto px-3 py-1 rounded-lg text-sm font-bold ${cost > maxBudget ? 'bg-red-600 text-white' :
-                        cost > maxBudget * 0.8 ? 'bg-yellow-600 text-white' :
-                          'bg-green-600 text-white'
+                      cost > maxBudget * 0.8 ? 'bg-yellow-600 text-white' :
+                        'bg-green-600 text-white'
                       }`}>
                       {((cost / maxBudget) * 100).toFixed(0)}% used
                     </div>
@@ -2950,8 +2965,8 @@ WHERE query_acceleration_bytes_scanned > 0;`,
                     <button
                       onClick={() => setBiMode('import')}
                       className={`flex-1 p-3 rounded-lg font-semibold transition ${biMode === 'import'
-                          ? 'bg-green-600 text-white'
-                          : 'bg-slate-800 text-slate-400'
+                        ? 'bg-green-600 text-white'
+                        : 'bg-slate-800 text-slate-400'
                         }`}
                     >
                       ≡ƒôÑ Import Mode
@@ -2959,8 +2974,8 @@ WHERE query_acceleration_bytes_scanned > 0;`,
                     <button
                       onClick={() => setBiMode('directquery')}
                       className={`flex-1 p-3 rounded-lg font-semibold transition ${biMode === 'directquery'
-                          ? 'bg-orange-600 text-white'
-                          : 'bg-slate-800 text-slate-400'
+                        ? 'bg-orange-600 text-white'
+                        : 'bg-slate-800 text-slate-400'
                         }`}
                     >
                       ΓÜí DirectQuery
@@ -2991,8 +3006,8 @@ WHERE query_acceleration_bytes_scanned > 0;`,
 
                       {/* Snowflake Icon */}
                       <div className={`w-20 h-20 rounded-xl flex items-center justify-center transition-all ${warehouseWoken
-                          ? 'bg-red-900/50 border-2 border-red-500 animate-pulse shadow-lg shadow-red-500/30'
-                          : 'bg-cyan-900/50 border-2 border-cyan-500'
+                        ? 'bg-red-900/50 border-2 border-red-500 animate-pulse shadow-lg shadow-red-500/30'
+                        : 'bg-cyan-900/50 border-2 border-cyan-500'
                         }`}>
                         <span className="text-3xl">Γ¥ä∩╕Å</span>
                       </div>
@@ -3245,8 +3260,8 @@ WHERE query_acceleration_bytes_scanned > 0;`,
                       key={qt.id}
                       onClick={() => { setQueryType(qt.id as any); resetQuery(); }}
                       className={`px-4 py-2 rounded-lg text-sm font-semibold transition ${queryType === qt.id
-                          ? 'bg-blue-600 text-white'
-                          : 'bg-slate-800 text-slate-400 hover:bg-slate-700'
+                        ? 'bg-blue-600 text-white'
+                        : 'bg-slate-800 text-slate-400 hover:bg-slate-700'
                         }`}
                     >
                       <span className="mr-2">{qt.icon}</span>
@@ -3313,8 +3328,8 @@ WHERE query_acceleration_bytes_scanned > 0;`,
                     onClick={runQuery}
                     disabled={isScanning}
                     className={`px-6 py-3 rounded-lg font-bold transition flex items-center gap-2 ${isScanning
-                        ? 'bg-yellow-600 text-white animate-pulse'
-                        : 'bg-green-600 hover:bg-green-500 text-white shadow-lg shadow-green-500/30'
+                      ? 'bg-yellow-600 text-white animate-pulse'
+                      : 'bg-green-600 hover:bg-green-500 text-white shadow-lg shadow-green-500/30'
                       }`}
                   >
                     {isScanning ? (
@@ -3352,12 +3367,12 @@ WHERE query_acceleration_bytes_scanned > 0;`,
                       <div
                         key={partition.id}
                         className={`relative rounded-xl border-2 p-4 transition-all duration-300 ${isCurrentlyScanng
-                            ? 'border-yellow-400 bg-yellow-900/30 scale-105 shadow-lg shadow-yellow-500/30'
-                            : hasBeenScanned
-                              ? isInRange
-                                ? 'border-green-500 bg-green-900/30 shadow-lg shadow-green-500/20'
-                                : 'border-red-500/50 bg-red-900/20 opacity-50'
-                              : 'border-slate-700 bg-slate-800/50'
+                          ? 'border-yellow-400 bg-yellow-900/30 scale-105 shadow-lg shadow-yellow-500/30'
+                          : hasBeenScanned
+                            ? isInRange
+                              ? 'border-green-500 bg-green-900/30 shadow-lg shadow-green-500/20'
+                              : 'border-red-500/50 bg-red-900/20 opacity-50'
+                            : 'border-slate-700 bg-slate-800/50'
                           }`}
                       >
                         {/* Scanning indicator */}
@@ -3370,8 +3385,8 @@ WHERE query_acceleration_bytes_scanned > 0;`,
                         {/* Status badge */}
                         {hasBeenScanned && !isCurrentlyScanng && (
                           <div className={`absolute -top-3 left-1/2 -translate-x-1/2 text-xs font-bold px-2 py-0.5 rounded ${isInRange
-                              ? 'bg-green-500 text-white'
-                              : 'bg-red-500 text-white'
+                            ? 'bg-green-500 text-white'
+                            : 'bg-red-500 text-white'
                             }`}>
                             {isInRange ? 'Γ£ô SCAN' : 'Γ£ù PRUNED'}
                           </div>
@@ -3415,10 +3430,10 @@ WHERE query_acceleration_bytes_scanned > 0;`,
                         <div className="mt-3 h-8 rounded overflow-hidden bg-slate-700/50">
                           <div
                             className={`h-full transition-all duration-500 ${hasBeenScanned
-                                ? isInRange
-                                  ? 'bg-gradient-to-r from-green-500 to-emerald-500'
-                                  : 'bg-slate-600/50'
-                                : 'bg-slate-600'
+                              ? isInRange
+                                ? 'bg-gradient-to-r from-green-500 to-emerald-500'
+                                : 'bg-slate-600/50'
+                              : 'bg-slate-600'
                               }`}
                             style={{
                               width: hasBeenScanned && isInRange ? '100%' : hasBeenScanned ? '0%' : '100%',
@@ -3759,8 +3774,8 @@ WHERE query_acceleration_bytes_scanned > 0;`,
                   key={jt.id}
                   onClick={() => setJoinType(jt.id as any)}
                   className={`px-4 py-2 rounded-lg text-sm font-semibold transition flex items-center gap-2 ${joinType === jt.id
-                      ? 'bg-cyan-600 text-white shadow-lg shadow-cyan-500/30'
-                      : 'bg-slate-800 text-slate-400 hover:text-white hover:bg-slate-700'
+                    ? 'bg-cyan-600 text-white shadow-lg shadow-cyan-500/30'
+                    : 'bg-slate-800 text-slate-400 hover:text-white hover:bg-slate-700'
                     }`}
                 >
                   <span className="text-lg">{jt.icon}</span>
@@ -4177,8 +4192,8 @@ CROSS JOIN TableB B;
               <div className="flex items-center justify-between mb-4">
                 <h3 className="font-bold text-white">≡ƒôè Result</h3>
                 <span className={`text-sm font-bold px-2 py-1 rounded ${joinType === 'cross' ? 'bg-red-900/50 text-red-400' :
-                    results.length > 10 ? 'bg-yellow-900/50 text-yellow-400' :
-                      'bg-green-900/50 text-green-400'
+                  results.length > 10 ? 'bg-yellow-900/50 text-yellow-400' :
+                    'bg-green-900/50 text-green-400'
                   }`}>
                   {results.length} rows
                 </span>
@@ -4195,15 +4210,15 @@ CROSS JOIN TableB B;
                 {results.slice(0, 40).map((row, idx) => (
                   <div key={idx} className="grid grid-cols-2 gap-1">
                     <div className={`p-2 rounded text-center font-mono text-xs ${row.isGhost && row.aId === null
-                        ? 'border-2 border-dashed border-red-500/50 text-red-400'
-                        : `${getValueColor(row.aVal, 'bg')} border ${getValueColor(row.aVal, 'border')}`
+                      ? 'border-2 border-dashed border-red-500/50 text-red-400'
+                      : `${getValueColor(row.aVal, 'bg')} border ${getValueColor(row.aVal, 'border')}`
                       }`}>
                       {row.aVal}
                       {row.isGhost && row.aId === null && <span className="ml-1">≡ƒæ╗</span>}
                     </div>
                     <div className={`p-2 rounded text-center font-mono text-xs ${row.isGhost && row.bId === null
-                        ? 'border-2 border-dashed border-red-500/50 text-red-400'
-                        : `${getValueColor(row.bVal, 'bg')} border ${getValueColor(row.bVal, 'border')}`
+                      ? 'border-2 border-dashed border-red-500/50 text-red-400'
+                      : `${getValueColor(row.bVal, 'bg')} border ${getValueColor(row.bVal, 'border')}`
                       }`}>
                       {row.bVal}
                       {row.isGhost && row.bId === null && <span className="ml-1">≡ƒæ╗</span>}
@@ -4456,8 +4471,8 @@ CROSS JOIN TableB B;
                   key={fn.id}
                   onClick={() => setWindowFunc(fn.id as any)}
                   className={`px-4 py-2 rounded-lg text-sm font-semibold transition flex items-center gap-2 ${windowFunc === fn.id
-                      ? 'bg-yellow-600 text-white shadow-lg shadow-yellow-500/30'
-                      : 'bg-slate-800 text-slate-400 hover:text-white hover:bg-slate-700'
+                    ? 'bg-yellow-600 text-white shadow-lg shadow-yellow-500/30'
+                    : 'bg-slate-800 text-slate-400 hover:text-white hover:bg-slate-700'
                     }`}
                 >
                   <span>{fn.icon}</span>
@@ -4586,8 +4601,8 @@ CROSS JOIN TableB B;
                           <div className="col-span-2 text-center relative">
                             {showResults && (
                               <div className={`inline-flex items-center justify-center w-12 h-10 rounded-lg font-bold text-lg animate-slide ${(windowFunc === 'lead' || windowFunc === 'lag')
-                                  ? resultValue ? 'bg-purple-900/50 border border-purple-500 text-purple-400 text-xs' : 'bg-slate-700 text-slate-500'
-                                  : isTied ? 'bg-yellow-900/50 border-2 border-yellow-500 text-yellow-400' : 'bg-cyan-900/50 border border-cyan-500 text-cyan-400'
+                                ? resultValue ? 'bg-purple-900/50 border border-purple-500 text-purple-400 text-xs' : 'bg-slate-700 text-slate-500'
+                                : isTied ? 'bg-yellow-900/50 border-2 border-yellow-500 text-yellow-400' : 'bg-cyan-900/50 border border-cyan-500 text-cyan-400'
                                 }`}>
                                 {resultValue ?? 'NULL'}
                               </div>
@@ -4782,8 +4797,8 @@ CROSS JOIN TableB B;
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id as any)}
                   className={`px-4 py-2 rounded-lg text-sm font-semibold transition flex items-center gap-2 ${activeTab === tab.id
-                      ? 'bg-pink-600 text-white shadow-lg shadow-pink-500/30'
-                      : 'bg-slate-800 text-slate-400 hover:text-white hover:bg-slate-700'
+                    ? 'bg-pink-600 text-white shadow-lg shadow-pink-500/30'
+                    : 'bg-slate-800 text-slate-400 hover:text-white hover:bg-slate-700'
                     }`}
                 >
                   <span>{tab.icon}</span>
@@ -4922,8 +4937,8 @@ CROSS JOIN TableB B;
                 {/* NVL Gate */}
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20">
                   <div className={`w-20 h-20 rounded-xl border-4 flex flex-col items-center justify-center transition-all ${isAnimating && boxPosition >= 45 && boxPosition <= 55 && isNull
-                      ? 'bg-green-600 border-green-400 scale-110 shadow-lg shadow-green-500/50'
-                      : 'bg-slate-700 border-slate-500'
+                    ? 'bg-green-600 border-green-400 scale-110 shadow-lg shadow-green-500/50'
+                    : 'bg-slate-700 border-slate-500'
                     }`}>
                     <span className="text-xl">≡ƒöº</span>
                     <span className="text-[10px] font-bold text-slate-300">NVL</span>
@@ -4941,8 +4956,8 @@ CROSS JOIN TableB B;
                 {(isAnimating || showResult) && (
                   <div
                     className={`absolute top-1/2 -translate-y-1/2 w-16 h-16 rounded-xl flex items-center justify-center font-bold text-lg transition-all z-10 ${(isNull && !isTransformed)
-                        ? 'border-2 border-dashed border-red-500 bg-red-900/30 text-red-400'
-                        : 'border-2 border-solid border-blue-500 bg-blue-900/50 text-blue-400'
+                      ? 'border-2 border-dashed border-red-500 bg-red-900/30 text-red-400'
+                      : 'border-2 border-solid border-blue-500 bg-blue-900/50 text-blue-400'
                       }`}
                     style={{
                       left: `calc(${boxPosition}% - 32px)`,
@@ -5092,8 +5107,8 @@ CROSS JOIN TableB B;
                   onClick={() => toggleColumn(idx)}
                   disabled={isAnimating}
                   className={`px-6 py-3 rounded-xl font-bold text-lg transition-all ${col.value !== null
-                      ? 'bg-green-600 text-white border-2 border-green-400'
-                      : 'bg-red-900/50 text-red-400 border-2 border-dashed border-red-500'
+                    ? 'bg-green-600 text-white border-2 border-green-400'
+                    : 'bg-red-900/50 text-red-400 border-2 border-dashed border-red-500'
                     }`}
                 >
                   {col.value !== null ? col.value : '≡ƒæ╗ NULL'}
@@ -5145,10 +5160,10 @@ CROSS JOIN TableB B;
                       <div key={col.id} className="relative my-4">
                         {/* Layer Platform */}
                         <div className={`relative w-48 h-16 rounded-xl border-2 flex items-center justify-center transition-all ${isStopPoint
-                            ? 'bg-green-900/50 border-green-500 shadow-lg shadow-green-500/30'
-                            : col.value !== null
-                              ? 'bg-slate-700 border-slate-500'
-                              : 'bg-red-900/30 border-red-500/50'
+                          ? 'bg-green-900/50 border-green-500 shadow-lg shadow-green-500/30'
+                          : col.value !== null
+                            ? 'bg-slate-700 border-slate-500'
+                            : 'bg-red-900/30 border-red-500/50'
                           }`}>
                           {/* Trapdoor Animation */}
                           <div className={`absolute inset-2 flex transition-all duration-300 ${isTrapdoorOpen ? 'gap-16' : 'gap-0'
@@ -5182,8 +5197,8 @@ CROSS JOIN TableB B;
 
                   {/* NULL Bucket */}
                   <div className={`w-48 h-16 mt-4 rounded-xl border-2 flex items-center justify-center transition-all ${stoppedAt === null && showResult
-                      ? 'bg-red-900/50 border-red-500 shadow-lg shadow-red-500/30'
-                      : 'bg-slate-800 border-slate-600 border-dashed'
+                    ? 'bg-red-900/50 border-red-500 shadow-lg shadow-red-500/30'
+                    : 'bg-slate-800 border-slate-600 border-dashed'
                     }`}>
                     <span className="text-red-400 font-bold">NULL Bucket ≡ƒ¬ú</span>
                   </div>
@@ -5280,8 +5295,8 @@ const ArithmeticTrapDemo = () => {
             <button
               onClick={() => toggleValue(true)}
               className={`px-8 py-4 rounded-xl font-bold text-xl transition-all ${isNull
-                  ? 'bg-red-600 text-white ring-4 ring-red-400 scale-110'
-                  : 'bg-slate-700 text-slate-400 hover:bg-slate-600'
+                ? 'bg-red-600 text-white ring-4 ring-red-400 scale-110'
+                : 'bg-slate-700 text-slate-400 hover:bg-slate-600'
                 }`}
             >
               ≡ƒæ╗ NULL
@@ -5293,8 +5308,8 @@ const ArithmeticTrapDemo = () => {
       <div className="flex items-center justify-center gap-6 py-8">
         {/* Input */}
         <div className={`w-24 h-24 rounded-2xl flex items-center justify-center font-bold text-3xl transition-all ${isNull
-            ? 'bg-red-900/50 border-2 border-dashed border-red-500 text-red-400'
-            : 'bg-blue-900/50 border-2 border-blue-500 text-blue-400'
+          ? 'bg-red-900/50 border-2 border-dashed border-red-500 text-red-400'
+          : 'bg-blue-900/50 border-2 border-blue-500 text-blue-400'
           }`}>
           {isNull ? '≡ƒæ╗' : '5'}
         </div>
@@ -5312,8 +5327,8 @@ const ArithmeticTrapDemo = () => {
 
         {/* Constant */}
         <div className={`w-24 h-24 rounded-2xl flex items-center justify-center font-bold text-3xl transition-all ${isNull && showVirus
-            ? 'bg-red-900/50 border-2 border-dashed border-red-500 text-red-400 animate-pulse'
-            : 'bg-green-900/50 border-2 border-green-500 text-green-400'
+          ? 'bg-red-900/50 border-2 border-dashed border-red-500 text-red-400 animate-pulse'
+          : 'bg-green-900/50 border-2 border-green-500 text-green-400'
           }`}>
           {isNull && showVirus ? '≡ƒªá' : '10'}
         </div>
@@ -5323,8 +5338,8 @@ const ArithmeticTrapDemo = () => {
 
         {/* Result */}
         <div className={`w-24 h-24 rounded-2xl flex items-center justify-center font-bold text-3xl transition-all ${isNull
-            ? 'bg-red-900/50 border-2 border-red-500 text-red-400 shadow-lg shadow-red-500/30'
-            : 'bg-cyan-900/50 border-2 border-cyan-500 text-cyan-400 shadow-lg shadow-cyan-500/30'
+          ? 'bg-red-900/50 border-2 border-red-500 text-red-400 shadow-lg shadow-red-500/30'
+          : 'bg-cyan-900/50 border-2 border-cyan-500 text-cyan-400 shadow-lg shadow-cyan-500/30'
           }`}>
           {isNull ? '≡ƒæ╗' : '15'}
         </div>
@@ -5460,14 +5475,14 @@ SELECT price * NVL(quantity, 0) AS total FROM orders;`}</pre>
                   <div
                     key={block.id}
                     className={`relative w-20 h-20 rounded-xl flex items-center justify-center font-bold text-xl transition-all ${isCurrentScan
-                        ? flashState === 'green'
-                          ? 'bg-green-600 border-2 border-green-400 scale-110 shadow-lg shadow-green-500/50'
-                          : flashState === 'red'
-                            ? 'bg-red-600 border-2 border-red-400 scale-110 shadow-lg shadow-red-500/50 animate-shake'
-                            : 'bg-yellow-600 border-2 border-yellow-400 scale-110'
-                        : block.value === null
-                          ? 'bg-red-900/30 border-2 border-dashed border-red-500 text-red-400'
-                          : 'bg-blue-900/50 border-2 border-blue-500 text-blue-400'
+                      ? flashState === 'green'
+                        ? 'bg-green-600 border-2 border-green-400 scale-110 shadow-lg shadow-green-500/50'
+                        : flashState === 'red'
+                          ? 'bg-red-600 border-2 border-red-400 scale-110 shadow-lg shadow-red-500/50 animate-shake'
+                          : 'bg-yellow-600 border-2 border-yellow-400 scale-110'
+                      : block.value === null
+                        ? 'bg-red-900/30 border-2 border-dashed border-red-500 text-red-400'
+                        : 'bg-blue-900/50 border-2 border-blue-500 text-blue-400'
                       } ${isScanned && block.value === null && countType === 'col' ? 'opacity-30' : ''}`}
                   >
                     {block.value === null ? '≡ƒæ╗' : block.value}
@@ -5501,10 +5516,10 @@ SELECT price * NVL(quantity, 0) AS total FROM orders;`}</pre>
             {/* Result Counter */}
             <div className="flex justify-center">
               <div className={`inline-flex items-center gap-4 px-8 py-4 rounded-xl border-2 ${countResult !== null
-                  ? countType === 'star'
-                    ? 'bg-yellow-900/30 border-yellow-500'
-                    : 'bg-cyan-900/30 border-cyan-500'
-                  : 'bg-slate-800 border-slate-600'
+                ? countType === 'star'
+                  ? 'bg-yellow-900/30 border-yellow-500'
+                  : 'bg-cyan-900/30 border-cyan-500'
+                : 'bg-slate-800 border-slate-600'
                 }`}>
                 <span className="text-slate-400 font-mono">
                   {countType === 'star' ? 'COUNT(*)' : 'COUNT(column)'} =
@@ -5861,10 +5876,10 @@ SELECT price * NVL(quantity, 0) AS total FROM orders;`}</pre>
                       <div
                         key={idx}
                         className={`text-xs rounded-lg px-3 py-2 border transition-all ${mergeStep === idx
-                            ? 'ring-2 ring-yellow-400 scale-105 shadow-lg'
-                            : mergeStep > idx
-                              ? 'opacity-30'
-                              : ''
+                          ? 'ring-2 ring-yellow-400 scale-105 shadow-lg'
+                          : mergeStep > idx
+                            ? 'opacity-30'
+                            : ''
                           } ${record.action === 'INSERT'
                             ? 'bg-green-900/30 border-green-500/50'
                             : 'bg-red-900/30 border-red-500/50'
@@ -5928,10 +5943,10 @@ SELECT price * NVL(quantity, 0) AS total FROM orders;`}</pre>
                     onClick={runMergeTask}
                     disabled={isMerging || streamData.length === 0}
                     className={`w-full px-4 py-3 rounded-lg font-bold text-sm transition mb-4 ${isMerging
-                        ? 'bg-yellow-600 animate-pulse'
-                        : streamData.length === 0
-                          ? 'bg-slate-700 text-slate-500 cursor-not-allowed'
-                          : 'bg-teal-600 hover:bg-teal-500 text-white'
+                      ? 'bg-yellow-600 animate-pulse'
+                      : streamData.length === 0
+                        ? 'bg-slate-700 text-slate-500 cursor-not-allowed'
+                        : 'bg-teal-600 hover:bg-teal-500 text-white'
                       }`}
                   >
                     {isMerging ? (
@@ -5966,8 +5981,8 @@ SELECT price * NVL(quantity, 0) AS total FROM orders;`}</pre>
                         <div
                           key={row.id}
                           className={`grid grid-cols-4 gap-1 text-xs rounded-lg px-2 py-2 border transition-all ${isBeingUpdated
-                              ? 'bg-yellow-900/50 border-yellow-500 ring-2 ring-yellow-400'
-                              : 'bg-slate-800 border-slate-700'
+                            ? 'bg-yellow-900/50 border-yellow-500 ring-2 ring-yellow-400'
+                            : 'bg-slate-800 border-slate-700'
                             }`}
                         >
                           <div className="text-cyan-400 font-mono">{row.id}</div>
@@ -6139,8 +6154,8 @@ MERGE INTO target t USING inventory_stream s
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id as any)}
                   className={`px-5 py-3 rounded-xl text-sm font-semibold transition flex flex-col items-center gap-1 ${activeTab === tab.id
-                      ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-500/30'
-                      : 'bg-slate-800 text-slate-400 hover:text-white hover:bg-slate-700'
+                    ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-500/30'
+                    : 'bg-slate-800 text-slate-400 hover:text-white hover:bg-slate-700'
                     }`}
                 >
                   <span className="text-xl">{tab.icon}</span>
@@ -6241,8 +6256,8 @@ MERGE INTO target t USING inventory_stream s
                 key={s.id}
                 onClick={() => { setScenario(s.id as any); reset(); }}
                 className={`p-4 rounded-xl border-2 transition-all text-left ${scenario === s.id
-                    ? 'border-cyan-500 bg-cyan-900/20 shadow-lg shadow-cyan-500/20'
-                    : 'border-slate-700 bg-slate-900 hover:border-slate-600'
+                  ? 'border-cyan-500 bg-cyan-900/20 shadow-lg shadow-cyan-500/20'
+                  : 'border-slate-700 bg-slate-900 hover:border-slate-600'
                   }`}
               >
                 <div className="text-2xl mb-2">{s.icon}</div>
@@ -6301,8 +6316,8 @@ MERGE INTO target t USING inventory_stream s
 
               {/* Status Display */}
               <div className={`p-6 rounded-xl text-center border-2 mb-4 transition-all ${isRunning ? 'border-green-500 bg-green-900/20 shadow-lg shadow-green-500/20' :
-                  isIdle ? 'border-red-500 bg-red-900/20 animate-pulse' :
-                    'border-slate-700 bg-slate-800'
+                isIdle ? 'border-red-500 bg-red-900/20 animate-pulse' :
+                  'border-slate-700 bg-slate-800'
                 }`}>
                 <div className="text-5xl mb-2">
                   {isRunning ? 'ΓÜí' : isIdle ? '≡ƒÆ╕' : '≡ƒÆñ'}
@@ -6497,8 +6512,8 @@ MERGE INTO target t USING inventory_stream s
             <button
               onClick={() => { setMode('self-hosted'); reset(); }}
               className={`p-6 rounded-xl border-2 transition-all text-left ${mode === 'self-hosted'
-                  ? 'border-orange-500 bg-orange-900/20 shadow-lg shadow-orange-500/20'
-                  : 'border-slate-700 bg-slate-900 hover:border-slate-600'
+                ? 'border-orange-500 bg-orange-900/20 shadow-lg shadow-orange-500/20'
+                : 'border-slate-700 bg-slate-900 hover:border-slate-600'
                 }`}
             >
               <div className="flex items-center gap-3 mb-3">
@@ -6518,8 +6533,8 @@ MERGE INTO target t USING inventory_stream s
             <button
               onClick={() => { setMode('saas'); reset(); }}
               className={`p-6 rounded-xl border-2 transition-all text-left ${mode === 'saas'
-                  ? 'border-cyan-500 bg-cyan-900/20 shadow-lg shadow-cyan-500/20'
-                  : 'border-slate-700 bg-slate-900 hover:border-slate-600'
+                ? 'border-cyan-500 bg-cyan-900/20 shadow-lg shadow-cyan-500/20'
+                : 'border-slate-700 bg-slate-900 hover:border-slate-600'
                 }`}
             >
               <div className="flex items-center gap-3 mb-3">
@@ -6546,15 +6561,15 @@ MERGE INTO target t USING inventory_stream s
 
               {/* Server Visual */}
               <div className={`relative h-48 rounded-xl border-2 flex items-center justify-center mb-4 transition-all ${mode === 'self-hosted'
-                  ? 'border-orange-500 bg-orange-900/20'
-                  : isRunning
-                    ? 'border-cyan-500 bg-cyan-900/20'
-                    : 'border-slate-600 bg-slate-800'
+                ? 'border-orange-500 bg-orange-900/20'
+                : isRunning
+                  ? 'border-cyan-500 bg-cyan-900/20'
+                  : 'border-slate-600 bg-slate-800'
                 }`}>
                 <div className="text-center">
                   <div className="text-6xl mb-2">{mode === 'self-hosted' ? '≡ƒûÑ∩╕Å' : 'Γÿü∩╕Å'}</div>
                   <div className={`font-bold ${mode === 'self-hosted' ? 'text-orange-400' :
-                      isRunning ? 'text-cyan-400' : 'text-slate-500'
+                    isRunning ? 'text-cyan-400' : 'text-slate-500'
                     }`}>
                     {mode === 'self-hosted' ? 'ALWAYS ON' : isRunning ? 'PROCESSING' : 'SLEEPING'}
                   </div>
@@ -6562,7 +6577,7 @@ MERGE INTO target t USING inventory_stream s
 
                 {/* Status Light */}
                 <div className={`absolute top-4 right-4 w-4 h-4 rounded-full ${mode === 'self-hosted' ? 'bg-green-500 animate-pulse' :
-                    isRunning ? 'bg-cyan-500 animate-pulse' : 'bg-slate-600'
+                  isRunning ? 'bg-cyan-500 animate-pulse' : 'bg-slate-600'
                   }`} />
 
                 {/* Money Drain */}
@@ -6723,10 +6738,10 @@ MERGE INTO target t USING inventory_stream s
                 key={m.id}
                 onClick={() => { setMode(m.id as any); reset(); }}
                 className={`p-4 rounded-xl border-2 transition-all text-center ${mode === m.id
-                    ? m.id === 'import' ? 'border-green-500 bg-green-900/20' :
-                      m.id === 'directquery' ? 'border-red-500 bg-red-900/20' :
-                        'border-purple-500 bg-purple-900/20'
-                    : 'border-slate-700 bg-slate-900 hover:border-slate-600'
+                  ? m.id === 'import' ? 'border-green-500 bg-green-900/20' :
+                    m.id === 'directquery' ? 'border-red-500 bg-red-900/20' :
+                      'border-purple-500 bg-purple-900/20'
+                  : 'border-slate-700 bg-slate-900 hover:border-slate-600'
                   }`}
               >
                 <div className="text-3xl mb-2">{m.icon}</div>
@@ -6759,8 +6774,8 @@ MERGE INTO target t USING inventory_stream s
 
                 {/* Power BI VertiPaq */}
                 <div className={`absolute left-1/3 top-1/2 -translate-y-1/2 -translate-x-1/2 p-4 rounded-xl border-2 transition-all ${mode === 'import' || mode === 'composite'
-                    ? 'border-green-500 bg-green-900/30 shadow-lg shadow-green-500/20'
-                    : 'border-slate-600 bg-slate-800 opacity-50'
+                  ? 'border-green-500 bg-green-900/30 shadow-lg shadow-green-500/20'
+                  : 'border-slate-600 bg-slate-800 opacity-50'
                   }`}>
                   <div className="text-3xl text-center">≡ƒôè</div>
                   <div className="text-xs font-bold text-green-400 mt-1">VertiPaq</div>
@@ -6777,10 +6792,10 @@ MERGE INTO target t USING inventory_stream s
 
                 {/* Snowflake */}
                 <div className={`absolute right-8 top-1/2 -translate-y-1/2 p-4 rounded-xl border-2 transition-all ${warehouseActive
-                    ? 'border-red-500 bg-red-900/30 scale-110 shadow-lg shadow-red-500/30'
-                    : mode === 'directquery' || mode === 'composite'
-                      ? 'border-cyan-500 bg-cyan-900/30'
-                      : 'border-slate-600 bg-slate-800 opacity-50'
+                  ? 'border-red-500 bg-red-900/30 scale-110 shadow-lg shadow-red-500/30'
+                  : mode === 'directquery' || mode === 'composite'
+                    ? 'border-cyan-500 bg-cyan-900/30'
+                    : 'border-slate-600 bg-slate-800 opacity-50'
                   }`}>
                   <div className="text-3xl text-center">Γ¥ä∩╕Å</div>
                   <div className={`text-xs font-bold mt-1 ${warehouseActive ? 'text-red-400' : 'text-cyan-400'}`}>
@@ -6826,11 +6841,11 @@ MERGE INTO target t USING inventory_stream s
 
               {/* Mode Explanation */}
               <div className={`rounded-xl border p-4 ${mode === 'import' ? 'bg-green-900/20 border-green-500/30' :
-                  mode === 'directquery' ? 'bg-red-900/20 border-red-500/30' :
-                    'bg-purple-900/20 border-purple-500/30'
+                mode === 'directquery' ? 'bg-red-900/20 border-red-500/30' :
+                  'bg-purple-900/20 border-purple-500/30'
                 }`}>
                 <h4 className={`font-bold mb-2 ${mode === 'import' ? 'text-green-400' :
-                    mode === 'directquery' ? 'text-red-400' : 'text-purple-400'
+                  mode === 'directquery' ? 'text-red-400' : 'text-purple-400'
                   }`}>
                   {currentMode.icon} {currentMode.name} Explained
                 </h4>
