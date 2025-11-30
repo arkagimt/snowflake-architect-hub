@@ -99,11 +99,11 @@ const OBTVisualizer = () => {
                 </div>
 
                 {/* Main Visualization */}
-                <div className="bg-slate-900 rounded-xl border border-slate-700 p-8 mb-6 min-h-[500px] relative overflow-hidden">
+                <div className="bg-slate-900 rounded-xl border border-slate-700 p-8 mb-6 min-h-[650px] relative overflow-hidden">
 
                     {!isOBT ? (
                         /* Star Schema View */
-                        <div className="relative h-[420px]">
+                        <div className="relative h-[600px]">
 
                             {/* DIM_DATE - Top */}
                             <div
