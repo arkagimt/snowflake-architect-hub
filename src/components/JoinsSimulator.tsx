@@ -57,10 +57,10 @@ const JoinsSimulator: React.FC<{ onBack: () => void }> = ({ onBack }) => {
             // Animate progress from 0 to 50 (middle), then show rejection
             let progress = 0;
             const animInterval = setInterval(() => {
-                progress += 2;
+                progress += 1.5; // Slower animation
                 if (progress <= 50) {
                     setNullValueAnim(prev => prev ? { ...prev, progress } : null);
-                } else if (progress <= 100) {
+                } else if (progress <= 120) { // Hold longer at rejection
                     // Hold at middle with rejection visible
                     setNullValueAnim(prev => prev ? { ...prev, progress: 50, active: true } : null);
                 } else {
@@ -73,9 +73,9 @@ const JoinsSimulator: React.FC<{ onBack: () => void }> = ({ onBack }) => {
             return () => clearInterval(animInterval);
         };
 
-        // Run animation every 4 seconds
-        const timeout = setTimeout(runNullValueAnimation, 1500);
-        const interval = setInterval(runNullValueAnimation, 5000);
+        // Run animation every 3.5 seconds
+        const timeout = setTimeout(runNullValueAnimation, 1000);
+        const interval = setInterval(runNullValueAnimation, 3500);
 
         return () => {
             clearTimeout(timeout);
@@ -148,7 +148,7 @@ const JoinsSimulator: React.FC<{ onBack: () => void }> = ({ onBack }) => {
                 if (a.value === null) {
                     tableB.forEach((b, bIdx) => {
                         if (b.value === null) {
-                            matches.push({ aIdx, bIdx, value: 'null', isNull: true });
+                            matches.push({ aIdx, bIdx, value: 'NULL', isNull: true });
                         }
                     });
                 }
@@ -334,9 +334,9 @@ const JoinsSimulator: React.FC<{ onBack: () => void }> = ({ onBack }) => {
                                             const isHighlighted = highlightValue === match.value || highlightValue === (match.value === 'null' ? 'NULL' : match.value);
 
                                             if (match.isNull) {
-                                                // Broken NULL line
+                                                // Broken NULL line (Simplified)
                                                 return (
-                                                    <g key={idx} className="transition-opacity" style={{ opacity: isHighlighted ? 1 : 0.7 }}>
+                                                    <g key={idx} className="transition-opacity" style={{ opacity: isHighlighted ? 1 : 0.8 }}>
                                                         {/* Left segment */}
                                                         <line
                                                             x1="0"
@@ -345,7 +345,7 @@ const JoinsSimulator: React.FC<{ onBack: () => void }> = ({ onBack }) => {
                                                             y2={(y1 + y2) / 2}
                                                             stroke={color}
                                                             strokeWidth={isHighlighted ? 3 : 2}
-                                                            strokeDasharray="6,4"
+                                                            strokeDasharray="8,6"
                                                         />
                                                         {/* Right segment */}
                                                         <line
@@ -355,13 +355,14 @@ const JoinsSimulator: React.FC<{ onBack: () => void }> = ({ onBack }) => {
                                                             y2={y2}
                                                             stroke={color}
                                                             strokeWidth={isHighlighted ? 3 : 2}
-                                                            strokeDasharray="6,4"
+                                                            strokeDasharray="8,6"
                                                         />
+                                                        {/* X mark background for contrast */}
+                                                        <circle cx="50%" cy={(y1 + y2) / 2} r="14" fill="#0f172a" stroke={color} strokeWidth="2" />
                                                         {/* X mark */}
-                                                        <circle cx="50%" cy={(y1 + y2) / 2} r="12" fill="#7f1d1d" stroke={color} strokeWidth="2" />
-                                                        <text x="50%" y={(y1 + y2) / 2 + 4} fill="white" fontSize="12" textAnchor="middle" fontWeight="bold">✖</text>
+                                                        <text x="50%" y={(y1 + y2) / 2 + 5} fill={color} fontSize="14" textAnchor="middle" fontWeight="bold">✖</text>
                                                         {/* Label */}
-                                                        <text x="50%" y={(y1 + y2) / 2 + 28} fill={color} fontSize="10" textAnchor="middle" className="font-mono">
+                                                        <text x="50%" y={(y1 + y2) / 2 + 30} fill={color} fontSize="11" textAnchor="middle" className="font-mono font-bold bg-slate-900/80 px-1 rounded">
                                                             NULL ≠ NULL
                                                         </text>
                                                     </g>
@@ -551,12 +552,6 @@ const JoinsSimulator: React.FC<{ onBack: () => void }> = ({ onBack }) => {
                   100% { opacity: 1; transform: scale(1); }
                 }
               `}</style>
-
-                                    {/* Center Join Label */}
-                                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-slate-800 border-2 border-slate-600 rounded-xl px-4 py-3 z-10 shadow-xl">
-                                        <div className="text-3xl text-center">{joinTypes.find(j => j.id === joinType)?.icon}</div>
-                                        <div className="text-xs text-slate-400 text-center mt-1 font-bold">{joinType.toUpperCase()}</div>
-                                    </div>
                                 </div>
 
                                 {/* Table B */}
