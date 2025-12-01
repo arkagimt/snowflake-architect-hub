@@ -5,6 +5,7 @@ import { ArrowRight, Database, Server, RefreshCw, Search, Terminal, Code, AlertT
 // --- Types ---
 type ScdType = 'type1' | 'type2' | 'type3';
 type QueryExample = 'current' | 'asOf' | 'history' | null;
+type DiffColumn = 'location' | 'status' | null;
 
 interface CustomerRecord {
     surrogateKey: number;
@@ -47,6 +48,12 @@ const SCDSimulator = ({ onBack }: { onBack: () => void }) => {
     const [logs, setLogs] = useState<string[]>([]);
     const [activeQuery, setActiveQuery] = useState<QueryExample>(null);
     const [showComparison, setShowComparison] = useState(false);
+
+    // Time Travel State
+    const [timeTravelEnabled, setTimeTravelEnabled] = useState(false);
+    const [timeTravelDate, setTimeTravelDate] = useState('2024-11-05'); // Default to latest
+    const [showHashScanner, setShowHashScanner] = useState(false);
+    const [diffColumn, setDiffColumn] = useState<DiffColumn>(null);
 
     // Real-world E-commerce Data
     const getInitialData = (): CustomerRecord[] => [
@@ -110,6 +117,17 @@ const SCDSimulator = ({ onBack }: { onBack: () => void }) => {
 
     // Filtered Data
     const getFilteredData = () => {
+        // Time Travel Mode - Point-in-Time Reconstruction
+        if (timeTravelEnabled && activeTab === 'type2') {
+            const selectedDate = new Date(timeTravelDate);
+            return tableData.filter(r => {
+                const start = new Date(r.startDate);
+                const end = r.endDate ? new Date(r.endDate) : new Date('9999-12-31');
+                // Show rows that were active at the selected point in time
+                return selectedDate >= start && selectedDate < end;
+            });
+        }
+
         if (activeTab !== 'type2') return tableData;
 
         if (activeQuery === 'current') {
@@ -148,6 +166,8 @@ const SCDSimulator = ({ onBack }: { onBack: () => void }) => {
         setStep(1);
         setLogs([]);
         setActiveQuery(null);
+        setShowHashScanner(true); // Trigger visual scanner
+        setDiffColumn(null);
         addLog(`[STEP 1] Scanning Source Stream for CustomerID: 1...`);
 
         setTimeout(() => {
@@ -155,8 +175,15 @@ const SCDSimulator = ({ onBack }: { onBack: () => void }) => {
             addLog(`[STEP 3] Fetching Active Record for CustomerID: 1...`);
             addLog(`[INFO] Current Active Location: '${activeRow?.location}' (Hash: '${activeRow?.hash}')`);
 
+            // Column-level diff detection
+            if (activeRow && activeRow.location !== incomingLocation) {
+                setDiffColumn('location');
+                addLog(`[DELTA] Column 'Location' changed: ${activeRow.location} → ${incomingLocation}`);
+            }
+
             setTimeout(() => {
                 setStep(2);
+                setShowHashScanner(false);
                 if (isHashMatch) {
                     addLog(`[RESULT] ✅ Hashes Match. No Action Required.`);
                 } else {
@@ -569,8 +596,8 @@ const SCDSimulator = ({ onBack }: { onBack: () => void }) => {
                                     <button
                                         onClick={() => setActiveQuery('current')}
                                         className={`px-3 py-1.5 rounded text-[10px] font-mono transition-all ${activeQuery === 'current'
-                                                ? 'bg-green-600 text-white'
-                                                : 'bg-slate-800 text-slate-400 hover:bg-slate-700'
+                                            ? 'bg-green-600 text-white'
+                                            : 'bg-slate-800 text-slate-400 hover:bg-slate-700'
                                             }`}
                                     >
                                         CURRENT_FLAG = TRUE
@@ -578,8 +605,8 @@ const SCDSimulator = ({ onBack }: { onBack: () => void }) => {
                                     <button
                                         onClick={() => setActiveQuery('asOf')}
                                         className={`px-3 py-1.5 rounded text-[10px] font-mono transition-all ${activeQuery === 'asOf'
-                                                ? 'bg-purple-600 text-white'
-                                                : 'bg-slate-800 text-slate-400 hover:bg-slate-700'
+                                            ? 'bg-purple-600 text-white'
+                                            : 'bg-slate-800 text-slate-400 hover:bg-slate-700'
                                             }`}
                                     >
                                         AS-OF '2022-01-01'
@@ -587,8 +614,8 @@ const SCDSimulator = ({ onBack }: { onBack: () => void }) => {
                                     <button
                                         onClick={() => setActiveQuery('history')}
                                         className={`px-3 py-1.5 rounded text-[10px] font-mono transition-all ${activeQuery === 'history'
-                                                ? 'bg-blue-600 text-white'
-                                                : 'bg-slate-800 text-slate-400 hover:bg-slate-700'
+                                            ? 'bg-blue-600 text-white'
+                                            : 'bg-slate-800 text-slate-400 hover:bg-slate-700'
                                             }`}
                                     >
                                         Customer #1 History
@@ -760,6 +787,89 @@ const SCDSimulator = ({ onBack }: { onBack: () => void }) => {
                             </div>
                         </div>
                     </div>
+
+                    {/* ⭐ TIME TRAVEL TIMELINE SLIDER - THE WOW FACTOR ⭐ */}
+                    {activeTab === 'type2' && (
+                        <div className="h-32 border-t border-slate-800 bg-gradient-to-b from-slate-900 to-slate-950 p-4">
+                            <div className="max-w-5xl mx-auto h-full flex flex-col">
+                                <div className="flex items-center justify-between mb-3">
+                                    <div className="flex items-center gap-2">
+                                        <Database size={14} className="text-purple-400" />
+                                        <span className="text-xs font-bold text-purple-400 uppercase tracking-wider">
+                                            ⏰ Time Travel - Point-in-Time Reconstruction
+                                        </span>
+                                    </div>
+                                    <button
+                                        onClick={() => {
+                                            setTimeTravelEnabled(!timeTravelEnabled);
+                                            setActiveQuery(null);
+                                        }}
+                                        className={`px-3 py-1 rounded text-xs font-semibold transition-all ${timeTravelEnabled
+                                                ? 'bg-purple-600 text-white shadow-lg shadow-purple-500/20'
+                                                : 'bg-slate-800 text-slate-400 hover:bg-slate-700'
+                                            }`}
+                                    >
+                                        {timeTravelEnabled ? '✓ Enabled' : 'Enable'}
+                                    </button>
+                                </div>
+
+                                {timeTravelEnabled && (
+                                    <motion.div
+                                        initial={{ opacity: 0, y: 10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        className="flex-1"
+                                    >
+                                        {/* Timeline Slider */}
+                                        <div className="relative">
+                                            <input
+                                                type="range"
+                                                min="2020-01-15"
+                                                max="2025-01-01"
+                                                value={timeTravelDate}
+                                                onChange={(e) => setTimeTravelDate(e.target.value)}
+                                                className="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer
+                                                    [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 
+                                                    [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-purple-500 
+                                                    [&::-webkit-slider-thumb]:shadow-lg [&::-webkit-slider-thumb]:shadow-purple-500/50
+                                                    [&::-webkit-slider-thumb]:cursor-pointer [&::-webkit-slider-thumb]:hover:bg-purple-400
+                                                    [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:rounded-full 
+                                                    [&::-moz-range-thumb]:bg-purple-500 [&::-moz-range-thumb]:border-0
+                                                    [&::-moz-range-thumb]:shadow-lg [&::-moz-range-thumb]:shadow-purple-500/50"
+                                                style={{
+                                                    background: `linear-gradient(to right, #a855f7 0%, #a855f7 ${((new Date(timeTravelDate).getTime() - new Date('2020-01-15').getTime()) /
+                                                            (new Date('2025-01-01').getTime() - new Date('2020-01-15').getTime())) * 100
+                                                        }%, #1e293b ${((new Date(timeTravelDate).getTime() - new Date('2020-01-15').getTime()) /
+                                                            (new Date('2025-01-01').getTime() - new Date('2020-01-15').getTime())) * 100
+                                                        }%, #1e293b 100%)`
+                                                }}
+                                            />
+
+                                            {/* Timeline Markers */}
+                                            <div className="absolute -top-5 left-0 right-0 flex justify-between text-[9px] text-slate-500 pointer-events-none">
+                                                <span>2020</span>
+                                                <span>2021</span>
+                                                <span>2022</span>
+                                                <span>2023</span>
+                                                <span>2024</span>
+                                                <span>2025</span>
+                                            </div>
+                                        </div>
+
+                                        {/* Selected Date & SQL Display */}
+                                        <div className="mt-4 flex items-center justify-between">
+                                            <div className="text-xs text-slate-400">
+                                                <span className="text-purple-400 font-mono font-bold text-sm">{timeTravelDate}</span>
+                                                <span className="ml-2">— Showing {filteredData.length} row(s) active at this time</span>
+                                            </div>
+                                            <div className="text-[10px] font-mono text-slate-500 bg-slate-950 px-3 py-1 rounded border border-slate-800">
+                                                WHERE START_DATE &lt;= '{timeTravelDate}' AND (END_DATE &gt;= '{timeTravelDate}' OR END_DATE IS NULL)
+                                            </div>
+                                        </div>
+                                    </motion.div>
+                                )}
+                            </div>
+                        </div>
+                    )}
                 </div>
             </div>
         </div>
