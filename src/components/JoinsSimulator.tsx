@@ -46,8 +46,8 @@ const JoinsSimulator: React.FC<{ onBack: () => void }> = ({ onBack }) => {
             const nullIndices = [4, 5];
             const nullIdx = nullIndices[Math.floor(Math.random() * nullIndices.length)];
 
-            // Pick a random non-NULL value from Table B (indices 0, 1, 2, 4 - values 2, 0, 0, 4)
-            const valueIndices = [0, 1, 2, 4];
+            // Pick a random target from Table B (indices 0, 1, 2, 3, 4 - including NULL at 3)
+            const valueIndices = [0, 1, 2, 3, 4];
             const valueIdx = valueIndices[Math.floor(Math.random() * valueIndices.length)];
             const targetValue = tableB[valueIdx].display;
 
