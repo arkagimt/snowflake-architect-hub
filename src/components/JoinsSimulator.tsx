@@ -587,6 +587,11 @@ const JoinsSimulator: React.FC<{ onBack: () => void }> = ({ onBack }) => {
                                     <span className="text-slate-500 text-xs"> → </span>
                                     <span className="bg-red-600 text-white px-1.5 py-0.5 rounded text-xs">FALSE</span>
                                 </div>
+                                {joinType === 'inner' && (
+                                    <div className="text-[10px] text-red-400 mt-2 text-center animate-pulse">
+                                        👀 Watch the animation!
+                                    </div>
+                                )}
                             </div>
 
                             {/* NEW: NULL vs Value Trap */}
