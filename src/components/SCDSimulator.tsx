@@ -506,7 +506,7 @@ const SCDSimulator = ({ onBack }: { onBack: () => void }) => {
                                 <motion.div
                                     initial={{ opacity: 0, scale: 0.8 }}
                                     animate={{ opacity: 1, scale: 1 }}
-                                    className={`absolute inset-0 bg-slate-950/90 flex items-center justify-center backdrop-blur-sm`}
+                                    className={`absolute inset-0 bg-slate-950/90 flex flex-col items-center justify-center backdrop-blur-sm p-2`}
                                 >
                                     <div className={`text-center p-2 rounded-lg border ${isHashMatch ? 'border-green-500/30 bg-green-500/10' : 'border-red-500/30 bg-red-500/10'}`}>
                                         {isHashMatch ? <CheckCircle className="text-green-400 mx-auto mb-1" size={24} /> : <AlertTriangle className="text-red-400 mx-auto mb-1" size={24} />}
@@ -514,6 +514,25 @@ const SCDSimulator = ({ onBack }: { onBack: () => void }) => {
                                             {isHashMatch ? 'NO CHANGE' : 'DELTA DETECTED'}
                                         </div>
                                     </div>
+
+                                    {/* Column-Level Diff */}
+                                    {!isHashMatch && diffColumn && (
+                                        <motion.div
+                                            initial={{ opacity: 0, y: 10 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            transition={{ delay: 0.2 }}
+                                            className="mt-2 text-[9px] text-slate-300 bg-slate-900/80 px-2 py-1 rounded border border-slate-700"
+                                        >
+                                            <div className="flex items-center gap-1">
+                                                <span className="text-slate-500">Column:</span>
+                                                <span className="text-orange-400 font-bold">{diffColumn.toUpperCase()}</span>
+                                                <ArrowRight size={10} className="text-slate-600" />
+                                                <span className="text-slate-500 line-through">{activeRow?.location}</span>
+                                                <ArrowRight size={10} className="text-red-400" />
+                                                <span className="text-green-400">{incomingLocation}</span>
+                                            </div>
+                                        </motion.div>
+                                    )}
                                 </motion.div>
                             )}
                         </div>
@@ -536,6 +555,41 @@ const SCDSimulator = ({ onBack }: { onBack: () => void }) => {
                                 </div>
                             </div>
                         </div>
+                    </div>
+
+                    {/* 🎯 Interview Insights Panel */}
+                    <div className="bg-gradient-to-br from-yellow-900/20 to-orange-900/20 rounded-lg border border-yellow-500/30 p-3">
+                        <div className="flex items-center gap-2 text-[11px] font-bold text-yellow-400 uppercase tracking-wider mb-2">
+                            <Info size={12} />
+                            Interview Insights - Type {activeTab.replace('type', '')}
+                        </div>
+
+                        {activeTab === 'type1' && (
+                            <div className="text-[10px] text-slate-300 space-y-1.5 leading-relaxed">
+                                <div><strong className="text-yellow-300">Use When:</strong> Historical data is NOT needed (e.g., correcting typos, updating email addresses)</div>
+                                <div><strong className="text-yellow-300">Trade-off:</strong> Lowest storage cost, but you LOSE all history. Can't answer "what was the value on June 1st?"</div>
+                                <div><strong className="text-yellow-300">Real-World:</strong> User profiles where only current state matters (username, preferences)</div>
+                            </div>
+                        )}
+
+                        {activeTab === 'type2' && (
+                            <div className="text-[10px] text-slate-300 space-y-1.5 leading-relaxed">
+                                <div><strong className="text-yellow-300">Use When:</strong> Compliance/audit requires full history (e.g., customer addresses for tax, pricing changes for disputes)</div>
+                                <div><strong className="text-yellow-300">Trade-off:</strong> Higher storage (1 row per change), but enables point-in-time reconstruction</div>
+                                <div><strong className="text-yellow-300">Real-World Example:</strong> E-commerce - "What was Sarah's shipping address on her Dec 2022 order?" → Query with <code className="bg-slate-800 px-1 rounded text-cyan-400">WHERE '2022-12-01' BETWEEN start_date AND end_date</code></div>
+                                <div><strong className="text-yellow-300">Cost:</strong> If a dimension changes daily, 1 customer = 365 rows/year. Use clustering on <code className="bg-slate-800 px-1 rounded text-cyan-400">customer_id</code> for query performance</div>
+                                <div><strong className="text-yellow-300">Interview Tip:</strong> Mention "Slowly Changing" - if changes are frequent, consider event sourcing instead</div>
+                            </div>
+                        )}
+
+                        {activeTab === 'type3' && (
+                            <div className="text-[10px] text-slate-300 space-y-1.5 leading-relaxed">
+                                <div><strong className="text-yellow-300">Use When:</strong> You only need the PREVIOUS value (e.g., product price before/after promo)</div>
+                                <div><strong className="text-yellow-300">Trade-off:</strong> Fixed storage (1 row per entity), but limited history depth (only N-1)</div>
+                                <div><strong className="text-yellow-300">Real-World:</strong> Sales dashboards showing "Old Price" vs "New Price" for promotion analysis</div>
+                                <div><strong className="text-yellow-300">Limitation:</strong> Can't ask "what was the price 3 changes ago?" - history is shallow</div>
+                            </div>
+                        )}
                     </div>
 
                     {/* Action Buttons */}
@@ -805,8 +859,8 @@ const SCDSimulator = ({ onBack }: { onBack: () => void }) => {
                                             setActiveQuery(null);
                                         }}
                                         className={`px-3 py-1 rounded text-xs font-semibold transition-all ${timeTravelEnabled
-                                                ? 'bg-purple-600 text-white shadow-lg shadow-purple-500/20'
-                                                : 'bg-slate-800 text-slate-400 hover:bg-slate-700'
+                                            ? 'bg-purple-600 text-white shadow-lg shadow-purple-500/20'
+                                            : 'bg-slate-800 text-slate-400 hover:bg-slate-700'
                                             }`}
                                     >
                                         {timeTravelEnabled ? '✓ Enabled' : 'Enable'}
@@ -837,7 +891,7 @@ const SCDSimulator = ({ onBack }: { onBack: () => void }) => {
                                                     [&::-moz-range-thumb]:shadow-lg [&::-moz-range-thumb]:shadow-purple-500/50"
                                                 style={{
                                                     background: `linear-gradient(to right, #a855f7 0%, #a855f7 ${((new Date(timeTravelDate).getTime() - new Date('2020-01-15').getTime()) /
-                                                            (new Date('2025-01-01').getTime() - new Date('2020-01-15').getTime())) * 100
+                                                        (new Date('2025-01-01').getTime() - new Date('2020-01-15').getTime())) * 100
                                                         }%, #1e293b ${((new Date(timeTravelDate).getTime() - new Date('2020-01-15').getTime()) /
                                                             (new Date('2025-01-01').getTime() - new Date('2020-01-15').getTime())) * 100
                                                         }%, #1e293b 100%)`
