@@ -75,8 +75,8 @@ const OBTVisualizer = () => {
                             onClick={denormalize}
                             disabled={isAnimating || isOBT}
                             className={`px-5 py-2 rounded-lg font-semibold transition flex items-center gap-2 ${isAnimating ? 'bg-yellow-600 text-white animate-pulse' :
-                                    isOBT ? 'bg-green-600 text-white cursor-default' :
-                                        'bg-purple-600 hover:bg-purple-500 text-white'
+                                isOBT ? 'bg-green-600 text-white cursor-default' :
+                                    'bg-purple-600 hover:bg-purple-500 text-white'
                                 }`}
                         >
                             {isAnimating ? (
@@ -103,7 +103,7 @@ const OBTVisualizer = () => {
 
                     {!isOBT ? (
                         /* Star Schema View */
-                        <div className="relative h-[420px]">
+                        <div className="relative h-[680px]">
 
                             {/* DIM_DATE - Top */}
                             <div
@@ -126,11 +126,11 @@ const OBTVisualizer = () => {
                                     </div>
                                 </div>
                                 {/* Connection line to fact */}
-                                <div className="absolute left-1/2 -translate-x-1/2 top-full w-0.5 h-8 bg-blue-500/50" style={{ background: 'linear-gradient(to bottom, #3b82f6, transparent)' }}></div>
+                                <div className="absolute left-1/2 -translate-x-1/2 top-full w-0.5 h-16 bg-blue-500/50" style={{ background: 'linear-gradient(to bottom, #3b82f6, transparent)' }}></div>
                             </div>
 
                             {/* Center Fact Table */}
-                            <div className={`absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10 transition-all duration-500 ${isAnimating ? 'scale-110' : ''}`}>
+                            <div className={`absolute top-[55%] left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10 transition-all duration-500 ${isAnimating ? 'scale-110' : ''}`}>
                                 <div className="bg-purple-900/40 border-2 border-purple-500 rounded-xl p-4 w-56 shadow-lg shadow-purple-500/20">
                                     <div className="text-xs font-bold text-purple-400 uppercase mb-2 flex items-center gap-2">
                                         <span>◆</span> Fact Table
@@ -151,7 +151,7 @@ const OBTVisualizer = () => {
 
                             {/* DIM_PRODUCT - Left */}
                             <div
-                                className={`absolute top-1/2 -translate-y-1/2 transition-all duration-1000 ${isAnimating ? 'opacity-0 scale-0' : 'opacity-100 scale-100'
+                                className={`absolute top-[55%] -translate-y-1/2 transition-all duration-1000 ${isAnimating ? 'opacity-0 scale-0' : 'opacity-100 scale-100'
                                     }`}
                                 style={{ left: '40px' }}
                             >
@@ -175,7 +175,7 @@ const OBTVisualizer = () => {
 
                             {/* DIM_CUSTOMER - Right */}
                             <div
-                                className={`absolute top-1/2 -translate-y-1/2 transition-all duration-1000 ${isAnimating ? 'opacity-0 scale-0' : 'opacity-100 scale-100'
+                                className={`absolute top-[55%] -translate-y-1/2 transition-all duration-1000 ${isAnimating ? 'opacity-0 scale-0' : 'opacity-100 scale-100'
                                     }`}
                                 style={{ right: '40px' }}
                             >
