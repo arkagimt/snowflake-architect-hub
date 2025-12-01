@@ -64,7 +64,7 @@ const CTESimulator = ({ onBack }: { onBack: () => void }) => {
     const [stepDesc, setStepDesc] = useState("This interactive tool visualizes how a Recursive CTE explodes a BOM hierarchy level by level. Click Next Step to begin.");
     const [isFinished, setIsFinished] = useState(false);
 
-    const resultEndRef = useRef<HTMLDivElement>(null);
+    const resultEndRef = useRef<HTMLTableRowElement>(null);
 
     // Auto-scroll
     useEffect(() => {

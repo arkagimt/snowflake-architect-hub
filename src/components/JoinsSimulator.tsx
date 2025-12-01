@@ -572,7 +572,8 @@ const JoinsSimulator: React.FC<{ onBack: () => void }> = ({ onBack }) => {
                             </div>
 
                             {/* The NULL = NULL Trap */}
-                            <div className={`bg-red-900/20 border rounded-xl p-4 transition-all ${highlightValue === 'NULL' ? 'border-red-400 ring-2 ring-red-400/30' : 'border-red-500/30'
+                            {/* The NULL = NULL Trap */}
+                            <div className={`bg-red-900/20 border rounded-xl p-4 transition-all ${highlightValue === 'NULL' || (nullValueAnim?.active && nullValueAnim?.targetValue === 'NULL') ? 'border-red-400 ring-2 ring-red-400/30 animate-pulse' : 'border-red-500/30'
                                 }`}
                                 onMouseEnter={() => setHighlightValue('NULL')}
                                 onMouseLeave={() => setHighlightValue(null)}
@@ -595,7 +596,7 @@ const JoinsSimulator: React.FC<{ onBack: () => void }> = ({ onBack }) => {
                             </div>
 
                             {/* NEW: NULL vs Value Trap */}
-                            <div className={`bg-orange-900/20 border rounded-xl p-4 transition-all ${nullValueAnim?.active ? 'border-orange-400 ring-2 ring-orange-400/30 animate-pulse' : 'border-orange-500/30'
+                            <div className={`bg-orange-900/20 border rounded-xl p-4 transition-all ${nullValueAnim?.active && nullValueAnim?.targetValue !== 'NULL' ? 'border-orange-400 ring-2 ring-orange-400/30 animate-pulse' : 'border-orange-500/30'
                                 }`}>
                                 <div className="flex items-center gap-2 mb-2">
                                     <span className="text-xl">🚷</span>
