@@ -12,6 +12,7 @@ import CostSimulator from './components/CostSimulator';
 import SCDSimulator from './components/SCDSimulator';
 import QueryProfileVisualizer from './components/QueryProfileVisualizer';
 import ConcurrencySimulator from './components/ConcurrencySimulator';
+import IngestionSimulator from './components/IngestionSimulator';
 
 export default function App() {
   const [currentView, setCurrentView] = useState<string>('menu');
@@ -70,6 +71,7 @@ export default function App() {
       {currentView === 'cost' && <CostSimulator onBack={goBack} />}
       {currentView === 'queryprofile' && <QueryProfileVisualizer onBack={goBack} />}
       {currentView === 'concurrency' && <ConcurrencySimulator onBack={goBack} />}
+      {currentView === 'ingestion' && <IngestionSimulator onBack={goBack} />}
     </>
   );
 }
