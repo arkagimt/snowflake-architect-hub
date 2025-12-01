@@ -178,6 +178,7 @@ const JoinsSimulator: React.FC<{ onBack: () => void }> = ({ onBack }) => {
     const getValueColor = (val: string | null, type: 'bg' | 'border' | 'line') => {
         const colors: Record<string, { bg: string; border: string; line: string }> = {
             'NULL': { bg: 'bg-red-900/50', border: 'border-red-500', line: '#ef4444' },
+            'NULL_CONNECTION': { bg: 'transparent', border: 'transparent', line: '#94a3b8' }, // Slate-400 for broken connection
             '0': { bg: 'bg-yellow-900/50', border: 'border-yellow-500', line: '#eab308' },
             '2': { bg: 'bg-green-900/50', border: 'border-green-500', line: '#22c55e' },
             '1': { bg: 'bg-blue-900/50', border: 'border-blue-500', line: '#3b82f6' },
@@ -329,44 +330,11 @@ const JoinsSimulator: React.FC<{ onBack: () => void }> = ({ onBack }) => {
 
                                             // Don't render if coords aren't ready
                                             if (!y1 || !y2) return null;
-
                                             const color = getValueColor(match.value === 'null' ? 'NULL' : match.value, 'line');
                                             const isHighlighted = highlightValue === match.value || highlightValue === (match.value === 'null' ? 'NULL' : match.value);
 
                                             if (match.isNull) {
-                                                // Broken NULL line (Simplified)
-                                                return (
-                                                    <g key={idx} className="transition-opacity" style={{ opacity: isHighlighted ? 1 : 0.8 }}>
-                                                        {/* Left segment */}
-                                                        <line
-                                                            x1="0"
-                                                            y1={y1}
-                                                            x2="35%"
-                                                            y2={(y1 + y2) / 2}
-                                                            stroke={color}
-                                                            strokeWidth={isHighlighted ? 3 : 2}
-                                                            strokeDasharray="8,6"
-                                                        />
-                                                        {/* Right segment */}
-                                                        <line
-                                                            x1="65%"
-                                                            y1={(y1 + y2) / 2}
-                                                            x2="100%"
-                                                            y2={y2}
-                                                            stroke={color}
-                                                            strokeWidth={isHighlighted ? 3 : 2}
-                                                            strokeDasharray="8,6"
-                                                        />
-                                                        {/* X mark background for contrast */}
-                                                        <circle cx="50%" cy={(y1 + y2) / 2} r="14" fill="#0f172a" stroke={color} strokeWidth="2" />
-                                                        {/* X mark */}
-                                                        <text x="50%" y={(y1 + y2) / 2 + 5} fill={color} fontSize="14" textAnchor="middle" fontWeight="bold">✖</text>
-                                                        {/* Label */}
-                                                        <text x="50%" y={(y1 + y2) / 2 + 30} fill={color} fontSize="11" textAnchor="middle" className="font-mono font-bold bg-slate-900/80 px-1 rounded">
-                                                            NULL ≠ NULL
-                                                        </text>
-                                                    </g>
-                                                );
+                                                return null;
                                             }
 
                                             return (
@@ -401,18 +369,18 @@ const JoinsSimulator: React.FC<{ onBack: () => void }> = ({ onBack }) => {
 
                                                 return (
                                                     <g className="null-value-animation">
-                                                        {/* Animated scanning line from NULL */}
+                                                        {/* Animated scanning line from NULL - Bright Orange */}
                                                         <line
                                                             x1="0"
                                                             y1={y1}
                                                             x2={currentX}
                                                             y2={currentY}
-                                                            stroke="#f97316"
+                                                            stroke="#f59e0b"
                                                             strokeWidth="3"
-                                                            strokeDasharray="8,4"
-                                                            opacity="0.9"
+                                                            strokeDasharray="4,4"
+                                                            opacity="1"
                                                             style={{
-                                                                filter: 'drop-shadow(0 0 6px rgba(249, 115, 22, 0.6))'
+                                                                filter: 'drop-shadow(0 0 4px rgba(245, 158, 11, 0.8))'
                                                             }}
                                                         />
 
@@ -422,10 +390,10 @@ const JoinsSimulator: React.FC<{ onBack: () => void }> = ({ onBack }) => {
                                                                 cx={currentX}
                                                                 cy={currentY}
                                                                 r="6"
-                                                                fill="#f97316"
-                                                                opacity="0.8"
+                                                                fill="#f59e0b"
+                                                                opacity="1"
                                                                 style={{
-                                                                    filter: 'drop-shadow(0 0 8px rgba(249, 115, 22, 0.8))'
+                                                                    filter: 'drop-shadow(0 0 8px rgba(245, 158, 11, 1))'
                                                                 }}
                                                             >
                                                                 <animate attributeName="r" values="4;8;4" dur="0.3s" repeatCount="indefinite" />
@@ -706,93 +674,33 @@ CROSS JOIN TableB B;
                         <div className="bg-orange-900/30 text-orange-400 p-2 rounded text-center">B.value</div>
                     </div>
 
-                    {/* Result Rows */}
-                    <div className="space-y-1 max-h-[400px] overflow-y-auto">
-                        {results.slice(0, 40).map((row, idx) => (
-                            <div key={idx} className="grid grid-cols-2 gap-1">
-                                <div className={`p-2 rounded text-center font-mono text-xs ${row.isGhost && row.aId === null
-                                    ? 'border-2 border-dashed border-red-500/50 text-red-400'
-                                    : `${getValueColor(row.aVal, 'bg')} border ${getValueColor(row.aVal, 'border')}`
-                                    }`}>
+                    {/* Rows */}
+                    <div className="space-y-1">
+                        {results.map((row, idx) => (
+                            <div
+                                key={idx}
+                                className={`grid grid-cols-2 gap-1 text-sm font-mono transition-all ${row.isGhost ? 'opacity-50' : ''
+                                    } ${highlightValue === row.matchType ? 'bg-white/10' : ''}`}
+                                onMouseEnter={() => setHighlightValue(row.matchType)}
+                                onMouseLeave={() => setHighlightValue(null)}
+                            >
+                                <div className={`p-2 rounded text-center border ${getValueColor(row.aVal, 'bg')} ${getValueColor(row.aVal, 'border')}`}>
                                     {row.aVal}
-                                    {row.isGhost && row.aId === null && <span className="ml-1">👻</span>}
                                 </div>
-                                <div className={`p-2 rounded text-center font-mono text-xs ${row.isGhost && row.bId === null
-                                    ? 'border-2 border-dashed border-red-500/50 text-red-400'
-                                    : `${getValueColor(row.bVal, 'bg')} border ${getValueColor(row.bVal, 'border')}`
-                                    }`}>
+                                <div className={`p-2 rounded text-center border ${getValueColor(row.bVal, 'bg')} ${getValueColor(row.bVal, 'border')}`}>
                                     {row.bVal}
-                                    {row.isGhost && row.bId === null && <span className="ml-1">👻</span>}
                                 </div>
                             </div>
                         ))}
-                        {results.length > 40 && (
-                            <div className="text-center text-slate-500 text-xs py-2">+{results.length - 40} more...</div>
-                        )}
                     </div>
-
-                    {/* Legend for outer joins */}
-                    {(joinType === 'left' || joinType === 'right' || joinType === 'full') && (
-                        <div className="mt-3 p-2 bg-slate-800 rounded-lg text-xs flex items-center gap-2">
-                            <div className="w-6 h-6 border-2 border-dashed border-red-500/50 rounded flex items-center justify-center">👻</div>
-                            <span className="text-slate-400">Ghost = No match (NULL filled)</span>
+                    {results.length === 0 && (
+                        <div className="text-center text-slate-500 py-8 text-sm">
+                            No matches found
                         </div>
                     )}
-
-                    {/* Row Breakdown */}
-                    <div className="mt-4 p-3 bg-slate-800 rounded-xl text-sm">
-                        <div className="text-xs font-bold text-slate-500 uppercase mb-2">Breakdown</div>
-                        {joinType !== 'cross' ? (
-                            <div className="space-y-1">
-                                <div className="flex justify-between">
-                                    <span className="text-green-400">"2" matches:</span>
-                                    <span className="font-mono">{stats.twos.a * stats.twos.b}</span>
-                                </div>
-                                <div className="flex justify-between">
-                                    <span className="text-yellow-400">"0" matches:</span>
-                                    <span className="font-mono">{stats.zeros.a * stats.zeros.b}</span>
-                                </div>
-                                <div className="flex justify-between">
-                                    <span className="text-red-400">NULL matches:</span>
-                                    <span className="font-mono">0</span>
-                                </div>
-                                {(joinType === 'left' || joinType === 'full') && (
-                                    <div className="flex justify-between">
-                                        <span className="text-slate-400">Unmatched A:</span>
-                                        <span className="font-mono">{tableA.filter(a => a.value === '1' || a.value === null).length}</span>
-                                    </div>
-                                )}
-                                {(joinType === 'right' || joinType === 'full') && (
-                                    <div className="flex justify-between">
-                                        <span className="text-slate-400">Unmatched B:</span>
-                                        <span className="font-mono">{tableB.filter(b => b.value === '4' || b.value === null).length}</span>
-                                    </div>
-                                )}
-                                <div className="border-t border-slate-700 pt-1 flex justify-between font-bold">
-                                    <span>Total:</span>
-                                    <span className="text-cyan-400">{results.length}</span>
-                                </div>
-                            </div>
-                        ) : (
-                            <div className="space-y-1">
-                                <div className="flex justify-between">
-                                    <span className="text-slate-400">Table A rows:</span>
-                                    <span className="font-mono">{tableA.length}</span>
-                                </div>
-                                <div className="flex justify-between">
-                                    <span className="text-slate-400">Table B rows:</span>
-                                    <span className="font-mono">{tableB.length}</span>
-                                </div>
-                                <div className="border-t border-slate-700 pt-1 flex justify-between font-bold">
-                                    <span>Total (A × B):</span>
-                                    <span className="text-red-400">{tableA.length * tableB.length}</span>
-                                </div>
-                            </div>
-                        )}
-                    </div>
                 </div>
-            </div >
-        </div >
+            </div>
+        </div>
     );
 };
 

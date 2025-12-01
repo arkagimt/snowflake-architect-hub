@@ -1,14 +1,12 @@
 import React from 'react';
 
-interface HeaderProps {
+const Header = ({ title, subtitle, icon, color, onBack }: {
     title: string;
     subtitle: string;
     icon: string;
     color: string;
     onBack: () => void;
-}
-
-const Header: React.FC<HeaderProps> = ({ title, subtitle, icon, color, onBack }) => {
+}) => {
     const colorMap: Record<string, string> = {
         orange: 'bg-orange-500/20',
         purple: 'bg-purple-500/20',
@@ -18,7 +16,6 @@ const Header: React.FC<HeaderProps> = ({ title, subtitle, icon, color, onBack })
         yellow: 'bg-yellow-500/20',
         pink: 'bg-pink-500/20',
         teal: 'bg-teal-500/20',
-        emerald: 'bg-emerald-500/20',
     };
 
     return (
@@ -27,7 +24,7 @@ const Header: React.FC<HeaderProps> = ({ title, subtitle, icon, color, onBack })
                 <button onClick={onBack} className="p-2 hover:bg-slate-800 rounded-lg transition text-slate-400 hover:text-white">
                     ← Back
                 </button>
-                <div className={`w-10 h-10 rounded-xl ${colorMap[color] || 'bg-slate-700'} flex items-center justify-center text-xl`}>
+                <div className={`w-10 h-10 rounded-xl ${colorMap[color] || 'bg-slate-800'} flex items-center justify-center text-xl`}>
                     {icon}
                 </div>
                 <div>

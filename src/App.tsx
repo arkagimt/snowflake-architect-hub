@@ -10,11 +10,10 @@ import CaseSimulator from './components/CaseSimulator';
 import ReconSimulator from './components/ReconSimulator';
 import CostSimulator from './components/CostSimulator';
 
-function App() {
+export default function App() {
   const [currentView, setCurrentView] = useState<string>('menu');
 
-  // Tailwind CDN - In a real Vite app, this should be handled by index.html or imported CSS
-  // But keeping it here for compatibility if needed, though we should prefer index.css
+  // Tailwind CDN
   useEffect(() => {
     if (!document.getElementById('tailwind-cdn')) {
       const script = document.createElement('script');
@@ -37,6 +36,24 @@ function App() {
 
   return (
     <>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+        * { box-sizing: border-box; }
+        html, body, #root { 
+          margin: 0; 
+          padding: 0; 
+          width: 100%; 
+          min-height: 100vh;
+          background: #020617;
+        }
+        body { font-family: 'Space Grotesk', sans-serif; }
+        .mono { font-family: 'JetBrains Mono', monospace; }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-slide { animation: slideIn 0.3s ease-out; }
+        @keyframes pulse-glow { 0%, 100% { opacity: 0.8; } 50% { opacity: 1; } }
+        .pulse-glow { animation: pulse-glow 2s infinite; }
+      `}</style>
+
       {currentView === 'menu' && <MainMenu onNavigate={setCurrentView} />}
       {currentView === 'cte' && <CTESimulator onBack={goBack} />}
       {currentView === 'modeling' && <ModelingSimulator onBack={goBack} />}
@@ -50,5 +67,3 @@ function App() {
     </>
   );
 }
-
-export default App;

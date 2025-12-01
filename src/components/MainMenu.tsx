@@ -1,19 +1,15 @@
 import React from 'react';
 
-interface MainMenuProps {
-    onNavigate: (view: string) => void;
-}
-
-const MainMenu: React.FC<MainMenuProps> = ({ onNavigate }) => {
+const MainMenu = ({ onNavigate }: { onNavigate: (view: string) => void }) => {
     const modules = [
-        { id: 'cte', title: 'Recursive CTEs', desc: 'BOM Hierarchy Explosion', icon: '🌳', color: 'orange', status: 'ready' },
-        { id: 'modeling', title: 'Data Modeling', desc: 'OBT, Bridge Tables, Star', icon: '🏗️', color: 'purple', status: 'ready' },
+        { id: 'cte', title: 'Recursive CTEs', desc: 'BOM Hierarchy Explosion', icon: '🔄', color: 'orange', status: 'ready' },
+        { id: 'modeling', title: 'Data Modeling', desc: 'OBT, Bridge Tables, Star', icon: '🗃️', color: 'purple', status: 'ready' },
         { id: 'indexing', title: 'Indexing Strategy', desc: 'B-Tree & Clustered', icon: '📊', color: 'green', status: 'ready' },
-        { id: 'pruning', title: 'Pruning & Partitions', desc: 'Zone Maps & Pruning', icon: '✂️', color: 'blue', status: 'ready' },
+        { id: 'pruning', title: 'Pruning & Partitions', desc: 'Zone Maps & Pruning', icon: '❄️', color: 'blue', status: 'ready' },
         { id: 'joins', title: 'SQL Joins', desc: 'Trick Questions & NULLs', icon: '🔗', color: 'cyan', status: 'ready' },
-        { id: 'window', title: 'Window Functions', desc: 'RANK, ROW_NUMBER, LEAD', icon: '🏃', color: 'yellow', status: 'ready' },
+        { id: 'window', title: 'Window Functions', desc: 'RANK, ROW_NUMBER, LEAD', icon: '🏏', color: 'yellow', status: 'ready' },
         { id: 'case', title: 'NULL Handling', desc: 'NVL, COALESCE, Traps', icon: '👻', color: 'pink', status: 'ready' },
-        { id: 'recon', title: 'Streams & Tasks', desc: 'CDC & Incremental Loading', icon: '🔄', color: 'teal', status: 'ready' },
+        { id: 'recon', title: 'Streams & Tasks', desc: 'CDC & Incremental Loading', icon: '🌊', color: 'teal', status: 'ready' },
         { id: 'cost', title: 'Cloud Cost & FinOps', desc: 'Credits, Storage & Compute', icon: '💰', color: 'emerald', status: 'ready' },
     ];
 

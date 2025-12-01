@@ -27,7 +27,7 @@ AS MERGE INTO target ...;`,
         },
         {
             title: 'Zero-Copy Clone',
-            icon: '📑',
+            icon: '📋',
             description: 'Instant copies without storage cost. Perfect for dev/test.',
             code: `CREATE DATABASE dev_db CLONE prod_db;
 CREATE TABLE backup CLONE source 
@@ -71,7 +71,7 @@ CREATE TABLE backup CLONE source
                                 <div className="flex gap-2 flex-wrap mb-2">
                                     {p.pros.map((pro, i) => (
                                         <span key={i} className="text-[10px] px-2 py-0.5 bg-green-900/30 text-green-400 rounded">
-                                            ✅ {pro}
+                                            ✓ {pro}
                                         </span>
                                     ))}
                                 </div>

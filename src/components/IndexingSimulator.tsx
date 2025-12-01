@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import SnowflakeClusteringViz from './SnowflakeClusteringViz';
 import FinOpsControlCenter from './FinOpsControlCenter';
 
-const IndexingSimulator: React.FC<{ onBack: () => void }> = ({ onBack }) => {
+const IndexingSimulator = ({ onBack }: { onBack: () => void }) => {
     const [activeTab, setActiveTab] = useState<'tsql' | 'snowflake' | 'comparison' | 'finops'>('tsql');
     const [indexType, setIndexType] = useState<'heap' | 'clustered' | 'nonclustered' | 'covering'>('heap');
     const [searchId, setSearchId] = useState<number | null>(null);
@@ -48,7 +48,7 @@ const IndexingSimulator: React.FC<{ onBack: () => void }> = ({ onBack }) => {
             // Table scan
             steps.push('Starting TABLE SCAN (no index)...');
             sampleData.forEach((row, idx) => {
-                steps.push(`Checking row ${idx + 1}: ID = ${row.id} ${row.id === id ? '✅ FOUND!' : '❌'}`);
+                steps.push(`Checking row ${idx + 1}: ID = ${row.id} ${row.id === id ? '✓ FOUND!' : '✗'}`);
             });
             steps.push(`Rows scanned: ${sampleData.length} | Complexity: O(n)`);
         } else if (indexType === 'clustered' || indexType === 'nonclustered') {
@@ -70,13 +70,13 @@ const IndexingSimulator: React.FC<{ onBack: () => void }> = ({ onBack }) => {
             const found = sampleData.find(r => r.id === id);
             if (found) {
                 if (indexType === 'clustered') {
-                    steps.push(`✅ FOUND! Data stored with index leaf.`);
+                    steps.push(`✓ FOUND! Data stored with index leaf.`);
                 } else {
-                    steps.push(`✅ FOUND key! Following RID pointer to data page...`);
+                    steps.push(`✓ FOUND key! Following RID pointer to data page...`);
                     steps.push(`KEY LOOKUP: Retrieved row from heap.`);
                 }
             } else {
-                steps.push(`❌ Key ${id} not found in leaf node.`);
+                steps.push(`✗ Key ${id} not found in leaf node.`);
             }
             steps.push(`Rows scanned: ~3 | Complexity: O(log n)`);
         } else if (indexType === 'covering') {
@@ -89,7 +89,7 @@ const IndexingSimulator: React.FC<{ onBack: () => void }> = ({ onBack }) => {
             } else {
                 steps.push(`${id} ≥ 13 → Navigate to RIGHT child`);
             }
-            steps.push(`✅ All columns INCLUDED in index!`);
+            steps.push(`✓ All columns INCLUDED in index!`);
             steps.push(`NO KEY LOOKUP needed - data in index leaf.`);
             steps.push(`Rows scanned: ~3 | Complexity: O(log n) | FASTEST!`);
         }
@@ -108,7 +108,7 @@ const IndexingSimulator: React.FC<{ onBack: () => void }> = ({ onBack }) => {
         {
             id: 'clustered',
             title: 'Clustered Index',
-            icon: '🎉',
+            icon: '🎯',
             description: 'Physically sorts and stores data rows. ONE per table. The table IS the index.',
             syntax: `-- Create clustered index (usually on PK)
 CREATE CLUSTERED INDEX IX_Parts_PartID
@@ -140,7 +140,7 @@ ON dbo.Parts (Category, Created_Date DESC);`,
         {
             id: 'covering',
             title: 'Covering Index (INCLUDE)',
-            icon: '📉',
+            icon: '📦',
             description: 'Non-clustered index that INCLUDES all columns needed. Eliminates key lookups!',
             syntax: `-- Covering index with INCLUDE
 CREATE NONCLUSTERED INDEX IX_Parts_Covering
@@ -149,6 +149,7 @@ INCLUDE (Part_Name, Unit_Price, Quantity);
 
 -- Query that benefits:
 SELECT Part_Name, Unit_Price, Quantity
+FROM dbo.Parts
 WHERE Category = 'Engine' AND Plant_Code = 'VPI';
 -- All columns in index = NO KEY LOOKUP!`,
             pros: ['Eliminates key lookups', 'Fastest read performance', 'Index-only scan'],
@@ -191,99 +192,6 @@ ON dbo.Fact_Sales (Order_Date, Product_ID, Amount);`,
         }
     ];
 
-    // Snowflake "Indexing" (actually optimization strategies)
-    const snowflakeStrategies = [
-        {
-            id: 'clustering',
-            title: 'Clustering Keys',
-            icon: '🎉',
-            description: 'Snowflake\'s alternative to indexes. Co-locates related data in micro-partitions.',
-            syntax: `-- Add clustering key
-ALTER TABLE marts.fct_sales
-CLUSTER BY (order_date, region);
-
--- Check clustering depth (lower = better)
-SELECT SYSTEM$CLUSTERING_INFORMATION(
-  'marts.fct_sales', '(order_date, region)'
-);
-
--- Monitor automatic reclustering
-SELECT * FROM TABLE(INFORMATION_SCHEMA.AUTOMATIC_CLUSTERING_HISTORY(
-  DATE_RANGE_START => DATEADD('day', -7, CURRENT_DATE())
-));`,
-            impact: 'Can reduce scan by 90%+',
-            bestFor: 'Large tables (1TB+) with consistent filter patterns'
-        },
-        {
-            id: 'search_optimization',
-            title: 'Search Optimization Service',
-            icon: '🔎',
-            description: 'Serverless feature for point lookups. Like a hash index. Great for selective queries.',
-            syntax: `-- Enable search optimization
-ALTER TABLE dim_customer
-ADD SEARCH OPTIMIZATION;
-
--- Enable for specific columns
-ALTER TABLE dim_customer ADD SEARCH OPTIMIZATION
-ON EQUALITY(customer_id, email);
-
--- Check status
-SHOW TABLES LIKE 'dim_customer';
--- Look for SEARCH_OPTIMIZATION = ON`,
-            impact: 'Dramatically faster point lookups',
-            bestFor: 'Equality predicates (=), high-cardinality columns, VARIANT/OBJECT types'
-        },
-        {
-            id: 'materialized_views',
-            title: 'Materialized Views',
-            icon: '📑',
-            description: 'Pre-computed results. Like a covering index for complex aggregations.',
-            syntax: `-- Create materialized view
-CREATE MATERIALIZED VIEW mv_daily_sales AS
-SELECT 
-  order_date,
-  region,
-  SUM(amount) AS total_amount,
-  COUNT(*) AS order_count
-GROUP BY order_date, region;
-
--- Query automatically uses MV
-SELECT * FROM fct_sales  -- Snowflake may use MV!
-WHERE order_date = '2024-01-15';`,
-            impact: 'Pre-aggregated = instant results',
-            bestFor: 'Repeated aggregation patterns, dashboard queries'
-        },
-        {
-            id: 'query_acceleration',
-            title: 'Query Acceleration Service',
-            icon: '⚡',
-            description: 'Serverless compute for ad-hoc analytical queries. Offloads scanning work.',
-            syntax: `-- Enable at warehouse level
-ALTER WAREHOUSE analytics_wh SET
-  ENABLE_QUERY_ACCELERATION = TRUE
-  QUERY_ACCELERATION_MAX_SCALE_FACTOR = 8;
-
--- Check if query was accelerated
-SELECT query_id, 
-       query_acceleration_bytes_scanned,
-       query_acceleration_partitions_scanned
-WHERE query_acceleration_bytes_scanned > 0;`,
-            impact: 'Faster ad-hoc queries',
-            bestFor: 'Large scans, unpredictable workloads, BI tool queries'
-        }
-    ];
-
-    const getColorClasses = (color: string) => {
-        const colors: Record<string, { bg: string; border: string; text: string }> = {
-            green: { bg: 'bg-green-500/20', border: 'border-green-500', text: 'text-green-400' },
-            blue: { bg: 'bg-blue-500/20', border: 'border-blue-500', text: 'text-blue-400' },
-            orange: { bg: 'bg-orange-500/20', border: 'border-orange-500', text: 'text-orange-400' },
-            cyan: { bg: 'bg-cyan-500/20', border: 'border-cyan-500', text: 'text-cyan-400' },
-            purple: { bg: 'bg-purple-500/20', border: 'border-purple-500', text: 'text-purple-400' },
-        };
-        return colors[color] || colors.green;
-    };
-
     return (
         <div className="flex flex-col h-screen w-full bg-slate-950 text-slate-200 overflow-hidden">
             {/* Header */}
@@ -317,8 +225,8 @@ WHERE query_acceleration_bytes_scanned > 0;`,
                             key={tab.id}
                             onClick={() => setActiveTab(tab.id as any)}
                             className={`px-4 py-2 rounded-lg text-sm font-semibold transition flex items-center gap-2 ${activeTab === tab.id
-                                ? 'bg-green-600 text-white shadow-lg shadow-green-500/30'
-                                : 'bg-slate-800 text-slate-400 hover:text-white hover:bg-slate-700'
+                                    ? 'bg-green-600 text-white shadow-lg shadow-green-500/30'
+                                    : 'bg-slate-800 text-slate-400 hover:text-white hover:bg-slate-700'
                                 }`}
                         >
                             <span>{tab.icon}</span>
@@ -350,11 +258,11 @@ WHERE query_acceleration_bytes_scanned > 0;`,
                                         key={type.id}
                                         onClick={() => { setIndexType(type.id as any); setSearchSteps([]); setSearchId(null); }}
                                         className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition ${indexType === type.id
-                                            ? type.color === 'red' ? 'bg-red-600 text-white' :
-                                                type.color === 'green' ? 'bg-green-600 text-white' :
-                                                    type.color === 'blue' ? 'bg-blue-600 text-white' :
-                                                        'bg-purple-600 text-white'
-                                            : 'bg-slate-800 text-slate-400'
+                                                ? type.color === 'red' ? 'bg-red-600 text-white' :
+                                                    type.color === 'green' ? 'bg-green-600 text-white' :
+                                                        type.color === 'blue' ? 'bg-blue-600 text-white' :
+                                                            'bg-purple-600 text-white'
+                                                : 'bg-slate-800 text-slate-400'
                                             }`}
                                     >
                                         {type.label}
@@ -409,10 +317,10 @@ WHERE query_acceleration_bytes_scanned > 0;`,
                                     <div className="grid grid-cols-4 gap-2">
                                         {sampleData.map((row, idx) => (
                                             <div key={row.id} className={`p-2 rounded border text-xs ${searchSteps.some(s => s.includes(`ID = ${row.id}`) && s.includes('FOUND'))
-                                                ? 'border-green-500 bg-green-900/30'
-                                                : searchSteps.some(s => s.includes(`ID = ${row.id}`))
-                                                    ? 'border-yellow-500 bg-yellow-900/20'
-                                                    : 'border-slate-700 bg-slate-800'
+                                                    ? 'border-green-500 bg-green-900/30'
+                                                    : searchSteps.some(s => s.includes(`ID = ${row.id}`))
+                                                        ? 'border-yellow-500 bg-yellow-900/20'
+                                                        : 'border-slate-700 bg-slate-800'
                                                 }`}>
                                                 <div className="text-slate-400">ID: {row.id}</div>
                                                 <div className="text-white truncate">{row.name}</div>
@@ -446,10 +354,10 @@ WHERE query_acceleration_bytes_scanned > 0;`,
                                     <div className="text-xs text-slate-500 uppercase mb-3">Execution Steps</div>
                                     <div className="space-y-1 mono text-xs">
                                         {searchSteps.map((step, idx) => (
-                                            <div key={idx} className={`py-1 animate-slide ${step.includes('✅') ? 'text-green-400' :
-                                                step.includes('❌') ? 'text-red-400' :
-                                                    step.includes('Complexity') ? 'text-cyan-400 font-bold' :
-                                                        'text-slate-400'
+                                            <div key={idx} className={`py-1 animate-slide ${step.includes('✓') ? 'text-green-400' :
+                                                    step.includes('✗') ? 'text-red-400' :
+                                                        step.includes('Complexity') ? 'text-cyan-400 font-bold' :
+                                                            'text-slate-400'
                                                 }`}>
                                                 {step}
                                             </div>
@@ -478,13 +386,13 @@ WHERE query_acceleration_bytes_scanned > 0;`,
                                             </div>
                                             <div className="grid grid-cols-2 gap-3 mb-2">
                                                 <div>
-                                                    <div className="text-[10px] font-bold text-green-400 mb-1">✅ Pros</div>
+                                                    <div className="text-[10px] font-bold text-green-400 mb-1">✓ Pros</div>
                                                     <ul className="text-[10px] text-slate-400 space-y-0.5">
                                                         {idx.pros.map((p, i) => <li key={i}>• {p}</li>)}
                                                     </ul>
                                                 </div>
                                                 <div>
-                                                    <div className="text-[10px] font-bold text-red-400 mb-1">❌ Cons</div>
+                                                    <div className="text-[10px] font-bold text-red-400 mb-1">✗ Cons</div>
                                                     <ul className="text-[10px] text-slate-400 space-y-0.5">
                                                         {idx.cons.map((c, i) => <li key={i}>• {c}</li>)}
                                                     </ul>
@@ -566,7 +474,7 @@ WHERE query_acceleration_bytes_scanned > 0;`,
 
                             {/* Interview Tips */}
                             <div className="mt-6 bg-green-900/20 border border-green-500/30 rounded-xl p-4">
-                                <h4 className="text-green-400 font-bold mb-3">🎉 Interview Tips</h4>
+                                <h4 className="text-green-400 font-bold mb-3">🎯 Interview Tips</h4>
                                 <ul className="text-sm text-slate-300 space-y-2">
                                     <li>• <strong>T-SQL:</strong> Know when to use Clustered vs Non-Clustered. Covering indexes eliminate Key Lookups.</li>
                                     <li>• <strong>Snowflake:</strong> Emphasize "no traditional indexes" - it's columnar storage with micro-partitions.</li>

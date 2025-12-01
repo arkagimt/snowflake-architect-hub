@@ -62,7 +62,7 @@ const OBTVisualizer = () => {
                 <div className="flex justify-between items-center mb-6">
                     <div>
                         <h3 className="text-xl font-bold text-white">
-                            {isOBT ? '📏 One Big Table (OBT)' : '⭐ Star Schema'}
+                            {isOBT ? '📊 One Big Table (OBT)' : '⭐ Star Schema'}
                         </h3>
                         <p className="text-sm text-slate-400">
                             {isOBT
@@ -75,8 +75,8 @@ const OBTVisualizer = () => {
                             onClick={denormalize}
                             disabled={isAnimating || isOBT}
                             className={`px-5 py-2 rounded-lg font-semibold transition flex items-center gap-2 ${isAnimating ? 'bg-yellow-600 text-white animate-pulse' :
-                                isOBT ? 'bg-green-600 text-white cursor-default' :
-                                    'bg-purple-600 hover:bg-purple-500 text-white'
+                                    isOBT ? 'bg-green-600 text-white cursor-default' :
+                                        'bg-purple-600 hover:bg-purple-500 text-white'
                                 }`}
                         >
                             {isAnimating ? (
@@ -85,7 +85,7 @@ const OBTVisualizer = () => {
                                     Denormalizing...
                                 </>
                             ) : isOBT ? (
-                                <>✅ OBT Created</>
+                                <>✓ OBT Created</>
                             ) : (
                                 <>🔄 Denormalize to OBT</>
                             )}
@@ -99,11 +99,11 @@ const OBTVisualizer = () => {
                 </div>
 
                 {/* Main Visualization */}
-                <div className="bg-slate-900 rounded-xl border border-slate-700 p-8 mb-6 min-h-[650px] relative overflow-hidden">
+                <div className="bg-slate-900 rounded-xl border border-slate-700 p-8 mb-6 min-h-[500px] relative overflow-hidden">
 
                     {!isOBT ? (
                         /* Star Schema View */
-                        <div className="relative h-[600px]">
+                        <div className="relative h-[420px]">
 
                             {/* DIM_DATE - Top */}
                             <div
@@ -113,7 +113,7 @@ const OBTVisualizer = () => {
                             >
                                 <div className="bg-blue-500/20 border-2 border-blue-500 rounded-xl p-3 w-44">
                                     <div className="text-xs font-bold text-blue-400 uppercase mb-2 flex items-center gap-1">
-                                        <span>🔹</span> Dimension
+                                        <span>○</span> Dimension
                                     </div>
                                     <div className="text-sm font-bold text-white mb-2">DIM_DATE</div>
                                     <div className="space-y-1">
@@ -133,7 +133,7 @@ const OBTVisualizer = () => {
                             <div className={`absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10 transition-all duration-500 ${isAnimating ? 'scale-110' : ''}`}>
                                 <div className="bg-purple-900/40 border-2 border-purple-500 rounded-xl p-4 w-56 shadow-lg shadow-purple-500/20">
                                     <div className="text-xs font-bold text-purple-400 uppercase mb-2 flex items-center gap-2">
-                                        <span>🔸</span> Fact Table
+                                        <span>◆</span> Fact Table
                                     </div>
                                     <div className="text-sm font-bold text-white mb-3">FCT_SALES_ORDER</div>
                                     <div className="space-y-1">
@@ -157,7 +157,7 @@ const OBTVisualizer = () => {
                             >
                                 <div className="bg-green-500/20 border-2 border-green-500 rounded-xl p-3 w-44">
                                     <div className="text-xs font-bold text-green-400 uppercase mb-2 flex items-center gap-1">
-                                        <span>🔹</span> Dimension
+                                        <span>○</span> Dimension
                                     </div>
                                     <div className="text-sm font-bold text-white mb-2">DIM_PRODUCT</div>
                                     <div className="space-y-1">
@@ -181,7 +181,7 @@ const OBTVisualizer = () => {
                             >
                                 <div className="bg-orange-500/20 border-2 border-orange-500 rounded-xl p-3 w-44">
                                     <div className="text-xs font-bold text-orange-400 uppercase mb-2 flex items-center gap-1">
-                                        <span>🔹</span> Dimension
+                                        <span>○</span> Dimension
                                     </div>
                                     <div className="text-sm font-bold text-white mb-2">DIM_CUSTOMER</div>
                                     <div className="space-y-1">
@@ -204,7 +204,7 @@ const OBTVisualizer = () => {
                                 <div className="flex items-center justify-between mb-4">
                                     <div>
                                         <div className="text-xs font-bold text-purple-400 uppercase flex items-center gap-2">
-                                            <span>⬛</span> One Big Table
+                                            <span>▣</span> One Big Table
                                         </div>
                                         <div className="text-lg font-bold text-white">OBT_SALES_DENORMALIZED</div>
                                     </div>
@@ -263,19 +263,19 @@ const OBTVisualizer = () => {
                         <div className="space-y-3 text-sm">
                             <div className="flex justify-between">
                                 <span className="text-slate-400">Storage</span>
-                                <span className="text-green-400 font-semibold">✅ Low (Normalized)</span>
+                                <span className="text-green-400 font-semibold">✓ Low (Normalized)</span>
                             </div>
                             <div className="flex justify-between">
                                 <span className="text-slate-400">Query CPU</span>
-                                <span className="text-yellow-400 font-semibold">⚠️ High (JOINs)</span>
+                                <span className="text-yellow-400 font-semibold">⚠ High (JOINs)</span>
                             </div>
                             <div className="flex justify-between">
                                 <span className="text-slate-400">Flexibility</span>
-                                <span className="text-green-400 font-semibold">✅ High</span>
+                                <span className="text-green-400 font-semibold">✓ High</span>
                             </div>
                             <div className="flex justify-between">
                                 <span className="text-slate-400">Maintenance</span>
-                                <span className="text-yellow-400 font-semibold">⚠️ Multiple tables</span>
+                                <span className="text-yellow-400 font-semibold">⚠ Multiple tables</span>
                             </div>
                         </div>
                         <div className="mt-4 p-3 bg-slate-800 rounded-lg">
@@ -286,26 +286,26 @@ const OBTVisualizer = () => {
 
                     <div className={`bg-slate-900 rounded-xl border p-5 transition-all ${isOBT ? 'border-cyan-500 ring-2 ring-cyan-500/20' : 'border-slate-700'}`}>
                         <div className="flex items-center gap-3 mb-4">
-                            <span className="text-2xl">📏</span>
+                            <span className="text-2xl">📊</span>
                             <h4 className="font-bold text-white">One Big Table (OBT)</h4>
                             {isOBT && <span className="text-xs bg-cyan-500 text-white px-2 py-0.5 rounded">CURRENT</span>}
                         </div>
                         <div className="space-y-3 text-sm">
                             <div className="flex justify-between">
                                 <span className="text-slate-400">Storage</span>
-                                <span className="text-yellow-400 font-semibold">⚠️ High (Redundant)</span>
+                                <span className="text-yellow-400 font-semibold">⚠ High (Redundant)</span>
                             </div>
                             <div className="flex justify-between">
                                 <span className="text-slate-400">Query CPU</span>
-                                <span className="text-green-400 font-semibold">✅ Zero (No JOINs)</span>
+                                <span className="text-green-400 font-semibold">✓ Zero (No JOINs)</span>
                             </div>
                             <div className="flex justify-between">
                                 <span className="text-slate-400">Flexibility</span>
-                                <span className="text-yellow-400 font-semibold">⚠️ Limited</span>
+                                <span className="text-yellow-400 font-semibold">⚠ Limited</span>
                             </div>
                             <div className="flex justify-between">
                                 <span className="text-slate-400">Maintenance</span>
-                                <span className="text-green-400 font-semibold">✅ Single table</span>
+                                <span className="text-green-400 font-semibold">✓ Single table</span>
                             </div>
                         </div>
                         <div className="mt-4 p-3 bg-slate-800 rounded-lg">
@@ -318,7 +318,7 @@ const OBTVisualizer = () => {
                 {/* Interview Tips */}
                 {showMetrics && (
                     <div className="mt-6 bg-purple-900/20 border border-purple-500/30 rounded-xl p-5 animate-slide">
-                        <h4 className="text-purple-400 font-bold mb-3">🎉 Interview Talking Points</h4>
+                        <h4 className="text-purple-400 font-bold mb-3">🎯 Interview Talking Points</h4>
                         <ul className="text-sm text-slate-300 space-y-2">
                             <li>• <strong>Why OBT in Snowflake?</strong> Storage is cheap, compute is expensive. OBT eliminates JOINs = faster queries.</li>
                             <li>• <strong>Trade-off:</strong> OBT works great for read-heavy analytics. Star Schema better for complex, evolving requirements.</li>

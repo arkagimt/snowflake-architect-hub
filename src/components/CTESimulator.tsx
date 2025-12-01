@@ -44,7 +44,7 @@ const sqlLines = [
     { id: 17, text: "SELECT * FROM BOM_Hierarchy;" }
 ];
 
-const CTESimulator: React.FC<{ onBack: () => void }> = ({ onBack }) => {
+const CTESimulator = ({ onBack }: { onBack: () => void }) => {
     // State
     const [currentStep, setCurrentStep] = useState(0);
     const [results, setResults] = useState<ResultRow[]>([]);
@@ -64,7 +64,7 @@ const CTESimulator: React.FC<{ onBack: () => void }> = ({ onBack }) => {
     const [stepDesc, setStepDesc] = useState("This interactive tool visualizes how a Recursive CTE explodes a BOM hierarchy level by level. Click Next Step to begin.");
     const [isFinished, setIsFinished] = useState(false);
 
-    const resultEndRef = useRef<HTMLTableRowElement>(null);
+    const resultEndRef = useRef<HTMLDivElement>(null);
 
     // Auto-scroll
     useEffect(() => {
@@ -218,7 +218,7 @@ const CTESimulator: React.FC<{ onBack: () => void }> = ({ onBack }) => {
 
             case 7: // Complete
                 setStepLabel("Complete");
-                setStepTitle("Hierarchy Exploded! ✅");
+                setStepTitle("Hierarchy Exploded! ✓");
                 setStepDesc(`The recursive CTE has finished. You now have a flat table representing the entire BOM tree. Total: ${results.length} components across 3 levels.`);
                 setHighlightedLines([17]);
                 setHighlightType('terminate');
@@ -272,7 +272,7 @@ const CTESimulator: React.FC<{ onBack: () => void }> = ({ onBack }) => {
                         ← Back
                     </button>
                     <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-cyan-500 to-purple-600 flex items-center justify-center text-2xl">
-                        🔁
+                        🔄
                     </div>
                     <div>
                         <h1 className="text-xl font-bold bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent">
@@ -290,9 +290,9 @@ const CTESimulator: React.FC<{ onBack: () => void }> = ({ onBack }) => {
                         onClick={handleNextStep}
                         disabled={isFinished}
                         className={`px-5 py-2 rounded-lg text-sm font-semibold transition flex items-center gap-2
-          ${isFinished ? 'bg-green-600 text-white cursor-default' : 'bg-gradient-to-r from-cyan-500 to-blue-500 text-slate-900 hover:opacity-90 shadow-lg shadow-cyan-500/25'}`}
+              ${isFinished ? 'bg-green-600 text-white cursor-default' : 'bg-gradient-to-r from-cyan-500 to-blue-500 text-slate-900 hover:opacity-90 shadow-lg shadow-cyan-500/25'}`}
                     >
-                        {isFinished ? '✅ Complete' : 'Next Step →'}
+                        {isFinished ? '✓ Complete' : 'Next Step →'}
                     </button>
                 </div>
             </header>
@@ -312,7 +312,7 @@ const CTESimulator: React.FC<{ onBack: () => void }> = ({ onBack }) => {
                             <div
                                 key={card.id}
                                 className={`px-4 py-3 rounded-xl border-2 transition-all duration-300 min-w-[140px]
-              ${isActive ? `${colors.bg} ${colors.border} shadow-lg` : 'bg-slate-800/50 border-slate-700/50 opacity-60'}`}
+                  ${isActive ? `${colors.bg} ${colors.border} shadow-lg` : 'bg-slate-800/50 border-slate-700/50 opacity-60'}`}
                             >
                                 <div className="flex items-center gap-2 mb-1">
                                     <span className={`w-6 h-6 rounded-md flex items-center justify-center text-xs font-bold ${colors.bg} ${colors.text}`}>
@@ -345,7 +345,7 @@ const CTESimulator: React.FC<{ onBack: () => void }> = ({ onBack }) => {
                                 <div
                                     key={line.id}
                                     className={`py-1 px-3 rounded-md transition-all duration-300 border-l-2
-                ${isHighlighted ? `${colors.bg} ${colors.border}` : 'border-transparent hover:bg-slate-800/50'}`}
+                    ${isHighlighted ? `${colors.bg} ${colors.border}` : 'border-transparent hover:bg-slate-800/50'}`}
                                 >
                                     <span className={
                                         line.type === 'comment' ? 'text-slate-600 italic' :
@@ -365,7 +365,7 @@ const CTESimulator: React.FC<{ onBack: () => void }> = ({ onBack }) => {
                     {/* Source Data */}
                     <div className="p-4 border-b border-slate-800 bg-slate-900/30">
                         <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3 flex items-center gap-2">
-                            <span>📂</span> BOM_COMPONENTS (Source)
+                            <span>⬡</span> BOM_COMPONENTS (Source)
                         </div>
                         <div className="grid grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2 max-h-32 overflow-y-auto">
                             {sourceData.map((item, idx) => {
@@ -374,7 +374,7 @@ const CTESimulator: React.FC<{ onBack: () => void }> = ({ onBack }) => {
                                     <div
                                         key={idx}
                                         className={`p-2 rounded-lg text-xs transition-all duration-300
-                  ${isMatched ? 'bg-orange-500/20 border border-orange-500 shadow-lg shadow-orange-500/20' : 'bg-slate-800/50 border border-slate-700/50'}`}
+                      ${isMatched ? 'bg-orange-500/20 border border-orange-500 shadow-lg shadow-orange-500/20' : 'bg-slate-800/50 border border-slate-700/50'}`}
                                     >
                                         <div className="text-slate-500 truncate text-[10px]">{item.parent}</div>
                                         <div className="text-center text-slate-600 text-[10px]">↓</div>
@@ -394,10 +394,10 @@ const CTESimulator: React.FC<{ onBack: () => void }> = ({ onBack }) => {
                             {/* Input Buffer */}
                             <div className="flex-1">
                                 <div className="text-xs text-slate-500 mb-2 flex items-center gap-1">
-                                    <span>📥</span> Input Buffer
+                                    <span>←</span> Input Buffer
                                 </div>
                                 <div className={`min-h-[140px] rounded-xl border-2 border-dashed p-3 transition-all duration-300
-              ${inputBuffer.length > 0 ? 'border-cyan-500/50 bg-cyan-500/5' : 'border-slate-700 bg-slate-800/30'}`}>
+                  ${inputBuffer.length > 0 ? 'border-cyan-500/50 bg-cyan-500/5' : 'border-slate-700 bg-slate-800/30'}`}>
                                     {inputBuffer.length === 0 ? (
                                         <div className="h-full flex items-center justify-center text-slate-600 text-sm">Waiting...</div>
                                     ) : (
@@ -416,8 +416,8 @@ const CTESimulator: React.FC<{ onBack: () => void }> = ({ onBack }) => {
                             {/* Process Icon */}
                             <div className="flex flex-col items-center gap-3">
                                 <div className={`w-16 h-16 rounded-full flex items-center justify-center text-2xl transition-all duration-500
-              ${isFinished ? 'bg-green-500 text-white shadow-lg shadow-green-500/40' : isProcessing ? 'bg-orange-500 text-white pulse-glow' : 'bg-slate-800 text-slate-500 border-2 border-slate-700'}`}>
-                                    {isFinished ? '✅' : isProcessing ? '🔄' : '🔒'}
+                  ${isFinished ? 'bg-green-500 text-white shadow-lg shadow-green-500/40' : isProcessing ? 'bg-orange-500 text-white pulse-glow' : 'bg-slate-800 text-slate-500 border-2 border-slate-700'}`}>
+                                    {isFinished ? '✓' : isProcessing ? '⚡' : '🔍'}
                                 </div>
                                 <span className={`text-xs font-semibold transition-opacity ${isProcessing ? 'text-orange-400 opacity-100' : 'opacity-0'}`}>
                                     JOINING...
@@ -427,10 +427,10 @@ const CTESimulator: React.FC<{ onBack: () => void }> = ({ onBack }) => {
                             {/* Output Buffer */}
                             <div className="flex-1">
                                 <div className="text-xs text-slate-500 mb-2 flex items-center gap-1">
-                                    Output <span>📤</span>
+                                    Output <span>→</span>
                                 </div>
                                 <div className={`min-h-[140px] rounded-xl border-2 border-dashed p-3 transition-all duration-300
-              ${outputBuffer.length > 0 ? 'border-green-500/50 bg-green-500/5' : 'border-slate-700 bg-slate-800/30'}`}>
+                  ${outputBuffer.length > 0 ? 'border-green-500/50 bg-green-500/5' : 'border-slate-700 bg-slate-800/30'}`}>
                                     {outputBuffer.length === 0 ? (
                                         <div className="h-full flex items-center justify-center text-slate-600 text-sm">
                                             {currentStep === 6 ? '∅ No rows found' : 'No results yet'}
@@ -459,7 +459,7 @@ const CTESimulator: React.FC<{ onBack: () => void }> = ({ onBack }) => {
                     {/* Result Table */}
                     <div className="h-48 border-t border-slate-800 bg-slate-900/50 p-4 overflow-hidden flex flex-col">
                         <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3 flex items-center gap-2">
-                            <span>🏁</span> Final Result Set
+                            <span>☰</span> Final Result Set
                         </div>
                         <div className="flex-1 overflow-y-auto">
                             <table className="w-full text-sm">
@@ -490,7 +490,7 @@ const CTESimulator: React.FC<{ onBack: () => void }> = ({ onBack }) => {
                 {/* Right: Explanation */}
                 <div className="w-72 bg-slate-900 border-l border-slate-800 flex flex-col shrink-0">
                     <div className="px-4 py-3 bg-slate-800/50 border-b border-slate-800 text-xs font-semibold text-slate-500 uppercase tracking-wider flex items-center gap-2">
-                        <span>💡</span> Explanation
+                        <span>ℹ</span> Explanation
                     </div>
                     <div className="flex-1 p-5 overflow-y-auto">
                         <div className={`text-xs font-semibold uppercase tracking-wider mb-2 ${getConceptColor(activeConcept || 'anchor').text}`}>

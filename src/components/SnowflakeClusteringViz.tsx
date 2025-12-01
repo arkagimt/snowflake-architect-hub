@@ -100,8 +100,8 @@ const SnowflakeClusteringViz = () => {
                                 onClick={runReclustering}
                                 disabled={isAnimating || isClustered}
                                 className={`px-4 py-2 rounded-lg font-semibold transition flex items-center gap-2 ${isAnimating ? 'bg-yellow-600 text-white animate-pulse' :
-                                    isClustered ? 'bg-green-600 text-white cursor-default' :
-                                        'bg-cyan-600 hover:bg-cyan-500 text-white'
+                                        isClustered ? 'bg-green-600 text-white cursor-default' :
+                                            'bg-cyan-600 hover:bg-cyan-500 text-white'
                                     }`}
                             >
                                 {isAnimating ? (
@@ -110,7 +110,7 @@ const SnowflakeClusteringViz = () => {
                                         Reclustering...
                                     </>
                                 ) : isClustered ? (
-                                    <>✅ Clustered</>
+                                    <>✓ Clustered</>
                                 ) : (
                                     <>⚡ Run Auto-Clustering</>
                                 )}
@@ -148,7 +148,7 @@ const SnowflakeClusteringViz = () => {
                     <div className="bg-slate-900 rounded-xl border border-slate-700 p-5">
                         <div className="flex items-center justify-between mb-4">
                             <h4 className="font-bold text-white">
-                                {isClustered ? '✅ Good Clustering' : '⚠️ Poor Clustering'}
+                                {isClustered ? '✓ Good Clustering' : '⚠️ Poor Clustering'}
                             </h4>
                             <span className={`text-xs px-2 py-1 rounded ${isClustered ? 'bg-green-900/50 text-green-400' : 'bg-red-900/50 text-red-400'
                                 }`}>
@@ -227,8 +227,8 @@ const SnowflakeClusteringViz = () => {
                                         key={date}
                                         onClick={() => setSearchDate(date)}
                                         className={`px-3 py-2 rounded-lg text-sm font-mono transition ${searchDate === date
-                                            ? 'bg-yellow-500 text-slate-900 font-bold'
-                                            : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
+                                                ? 'bg-yellow-500 text-slate-900 font-bold'
+                                                : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
                                             }`}
                                     >
                                         Day {date}
@@ -241,8 +241,8 @@ const SnowflakeClusteringViz = () => {
                                     <div className="flex justify-between items-center mb-2">
                                         <span className="text-sm text-slate-400">Partitions Scanned:</span>
                                         <span className={`text-lg font-bold ${scannedPartitions.length <= 1 ? 'text-green-400' :
-                                            scannedPartitions.length <= 3 ? 'text-yellow-400' :
-                                                'text-red-400'
+                                                scannedPartitions.length <= 3 ? 'text-yellow-400' :
+                                                    'text-red-400'
                                             }`}>
                                             {scannedPartitions.length} / {currentData.length}
                                         </span>
@@ -250,8 +250,8 @@ const SnowflakeClusteringViz = () => {
                                     <div className="flex justify-between items-center mb-2">
                                         <span className="text-sm text-slate-400">Pruning Efficiency:</span>
                                         <span className={`text-lg font-bold ${pruningEfficiency >= 80 ? 'text-green-400' :
-                                            pruningEfficiency >= 50 ? 'text-yellow-400' :
-                                                'text-red-400'
+                                                pruningEfficiency >= 50 ? 'text-yellow-400' :
+                                                    'text-red-400'
                                             }`}>
                                             {pruningEfficiency}%
                                         </span>
@@ -260,8 +260,8 @@ const SnowflakeClusteringViz = () => {
                                     <div className="h-2 bg-slate-700 rounded-full overflow-hidden">
                                         <div
                                             className={`h-full transition-all duration-500 ${pruningEfficiency >= 80 ? 'bg-green-500' :
-                                                pruningEfficiency >= 50 ? 'bg-yellow-500' :
-                                                    'bg-red-500'
+                                                    pruningEfficiency >= 50 ? 'bg-yellow-500' :
+                                                        'bg-red-500'
                                                 }`}
                                             style={{ width: `${pruningEfficiency}%` }}
                                         />
@@ -305,7 +305,7 @@ const SnowflakeClusteringViz = () => {
 
                 {/* SQL Reference */}
                 <div className="bg-slate-900 rounded-xl border border-slate-700 p-5">
-                    <h4 className="font-bold text-white mb-3">📜 SQL Commands for Clustering</h4>
+                    <h4 className="font-bold text-white mb-3">📝 SQL Commands for Clustering</h4>
                     <div className="grid grid-cols-2 gap-4">
                         <div className="bg-slate-950 rounded-lg p-4">
                             <div className="text-xs text-cyan-400 font-bold mb-2">Add Clustering Key</div>
@@ -334,7 +334,7 @@ SUSPEND RECLUSTER;`}</pre>
                 {/* Interview Tips */}
                 {showMetrics && (
                     <div className="mt-6 bg-green-900/20 border border-green-500/30 rounded-xl p-5 animate-slide">
-                        <h4 className="text-green-400 font-bold mb-3">🎉 Key Interview Talking Points</h4>
+                        <h4 className="text-green-400 font-bold mb-3">🎯 Key Interview Talking Points</h4>
                         <ul className="text-sm text-slate-300 space-y-2">
                             <li>• <strong>Clustering depth</strong> = average # of partitions containing overlapping values. Lower is better.</li>
                             <li>• <strong>Auto-reclustering</strong> runs in background when data changes. Consumes credits from Snowflake account.</li>

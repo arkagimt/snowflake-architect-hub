@@ -4,9 +4,10 @@ import BridgeTableVisualizer from './BridgeTableVisualizer';
 import DBTLayersViz from './DBTLayersViz';
 import SnowflakePatternsViz from './SnowflakePatternsViz';
 
-const ModelingSimulator: React.FC<{ onBack: () => void }> = ({ onBack }) => {
+const ModelingSimulator = ({ onBack }: { onBack: () => void }) => {
     const [activeTab, setActiveTab] = useState<'obt' | 'bridge' | 'dbt' | 'snowflake'>('obt');
 
+    // Keyboard shortcuts
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
             if (e.key === 'Escape') onBack();
@@ -23,18 +24,15 @@ const ModelingSimulator: React.FC<{ onBack: () => void }> = ({ onBack }) => {
                     <button onClick={onBack} className="p-2 hover:bg-slate-800 rounded-lg transition text-slate-400 hover:text-white">
                         ← Back
                     </button>
-                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center text-2xl">
-                        📐
+                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-pink-600 flex items-center justify-center text-2xl">
+                        🗃️
                     </div>
                     <div>
-                        <h1 className="text-xl font-bold bg-gradient-to-r from-purple-400 to-indigo-400 bg-clip-text text-transparent">
-                            Data Modeling & Architecture
+                        <h1 className="text-xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+                            Data Modeling Simulator
                         </h1>
-                        <p className="text-xs text-slate-500">Star Schema • OBT • DBT • Snowflake Patterns</p>
+                        <p className="text-xs text-slate-500">OBT • Bridge Tables • DBT Layers • Snowflake Patterns</p>
                     </div>
-                </div>
-                <div className="text-xs text-slate-600">
-                    Press ESC to return
                 </div>
             </header>
 
@@ -44,15 +42,15 @@ const ModelingSimulator: React.FC<{ onBack: () => void }> = ({ onBack }) => {
                     {[
                         { id: 'obt', label: 'OBT vs Star Schema', icon: '⭐' },
                         { id: 'bridge', label: 'Bridge Tables (M:M)', icon: '🌉' },
-                        { id: 'dbt', label: 'DBT Layers', icon: '🧱' },
+                        { id: 'dbt', label: 'DBT Layers', icon: '🔶' },
                         { id: 'snowflake', label: 'Snowflake Patterns', icon: '❄️' },
                     ].map(tab => (
                         <button
                             key={tab.id}
                             onClick={() => setActiveTab(tab.id as any)}
                             className={`px-4 py-2 rounded-lg text-sm font-semibold transition flex items-center gap-2 ${activeTab === tab.id
-                                ? 'bg-purple-600 text-white shadow-lg shadow-purple-500/30'
-                                : 'bg-slate-800 text-slate-400 hover:text-white hover:bg-slate-700'
+                                    ? 'bg-purple-600 text-white shadow-lg shadow-purple-500/30'
+                                    : 'bg-slate-800 text-slate-400 hover:text-white hover:bg-slate-700'
                                 }`}
                         >
                             <span>{tab.icon}</span>

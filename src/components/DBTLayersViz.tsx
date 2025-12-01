@@ -82,7 +82,7 @@ SELECT * FROM final`
     return (
         <div className="h-full p-6 overflow-y-auto">
             <div className="max-w-5xl mx-auto">
-                <h3 className="text-xl font-bold text-white mb-6">🧱 DBT Project Structure</h3>
+                <h3 className="text-xl font-bold text-white mb-6">🔶 DBT Project Structure</h3>
 
                 <div className="flex gap-6">
                     {/* Layer Selector */}
@@ -92,8 +92,8 @@ SELECT * FROM final`
                                 key={key}
                                 onClick={() => setActiveLayer(key as any)}
                                 className={`w-full p-4 rounded-xl text-left transition ${activeLayer === key
-                                    ? `bg-${layer.color}-500/20 border-2 border-${layer.color}-500`
-                                    : 'bg-slate-800 border-2 border-slate-700 hover:border-slate-600'
+                                        ? `bg-${layer.color}-500/20 border-2 border-${layer.color}-500`
+                                        : 'bg-slate-800 border-2 border-slate-700 hover:border-slate-600'
                                     }`}
                             >
                                 <div className={`font-bold ${activeLayer === key ? `text-${layer.color}-400` : 'text-white'}`}>

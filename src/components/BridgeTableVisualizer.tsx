@@ -76,8 +76,8 @@ const BridgeTableVisualizer = () => {
                             onClick={addBridge}
                             disabled={isAnimating || hasBridge}
                             className={`px-5 py-2 rounded-lg font-semibold transition flex items-center gap-2 ${isAnimating ? 'bg-yellow-600 text-white animate-pulse' :
-                                hasBridge ? 'bg-green-600 text-white cursor-default' :
-                                    'bg-cyan-600 hover:bg-cyan-500 text-white'
+                                    hasBridge ? 'bg-green-600 text-white cursor-default' :
+                                        'bg-cyan-600 hover:bg-cyan-500 text-white'
                                 }`}
                         >
                             {isAnimating ? (
@@ -86,7 +86,7 @@ const BridgeTableVisualizer = () => {
                                     Creating...
                                 </>
                             ) : hasBridge ? (
-                                <>✅ Bridge Added</>
+                                <>✓ Bridge Added</>
                             ) : (
                                 <>🌉 Add Bridge Table</>
                             )}
@@ -107,7 +107,7 @@ const BridgeTableVisualizer = () => {
                         <div className="flex-1">
                             <div className="bg-blue-900/30 border-2 border-blue-500 rounded-xl p-4">
                                 <div className="text-xs font-bold text-blue-400 uppercase mb-3 flex items-center gap-2">
-                                    <span>👤</span> EMPLOYEES
+                                    <span>👥</span> EMPLOYEES
                                 </div>
                                 <div className="space-y-2">
                                     {employees.map(emp => {
@@ -118,8 +118,8 @@ const BridgeTableVisualizer = () => {
                                                 key={emp.id}
                                                 onClick={() => hasBridge && setSelectedEmployee(isSelected ? null : emp.id)}
                                                 className={`p-3 rounded-lg transition cursor-pointer ${isSelected ? 'bg-blue-500/30 border border-blue-400' :
-                                                    hasConnection ? 'bg-slate-800 hover:bg-slate-700' :
-                                                        'bg-slate-800/50'
+                                                        hasConnection ? 'bg-slate-800 hover:bg-slate-700' :
+                                                            'bg-slate-800/50'
                                                     }`}
                                             >
                                                 <div className="flex justify-between items-center">
@@ -174,7 +174,7 @@ const BridgeTableVisualizer = () => {
                                         })}
                                     </div>
                                     <div className="mt-3 pt-3 border-t border-slate-700 text-xs text-slate-400">
-                                        ✅ Stores additional attributes: <span className="text-emerald-400">role, hours</span>
+                                        ✓ Stores additional attributes: <span className="text-emerald-400">role, hours</span>
                                     </div>
                                 </div>
                             )}
@@ -214,7 +214,7 @@ const BridgeTableVisualizer = () => {
                     {/* Hint */}
                     {hasBridge && !selectedEmployee && (
                         <div className="mt-6 text-center text-sm text-slate-500">
-                            👆 Click on an employee to see their project connections
+                            👆 Click on an employee to see which projects they are assigned to
                         </div>
                     )}
                 </div>
@@ -261,7 +261,7 @@ const BridgeTableVisualizer = () => {
                 {/* SQL Reference */}
                 <div className="grid grid-cols-2 gap-6">
                     <div className="bg-slate-900 rounded-xl border border-slate-700 p-5">
-                        <h4 className="font-bold text-white mb-3">📜 Bridge Table DDL</h4>
+                        <h4 className="font-bold text-white mb-3">📝 Bridge Table DDL</h4>
                         <div className="bg-slate-950 rounded-lg p-4 mono text-xs text-slate-400">
                             <div><span className="text-purple-400">CREATE TABLE</span> employee_project_mapping (</div>
                             <div className="pl-4">emp_id <span className="text-cyan-400">INT</span> <span className="text-orange-400">REFERENCES</span> employees(id),</div>
@@ -274,7 +274,7 @@ const BridgeTableVisualizer = () => {
                     </div>
 
                     <div className="bg-slate-900 rounded-xl border border-slate-700 p-5">
-                        <h4 className="font-bold text-white mb-3">🛣️ Query Pattern</h4>
+                        <h4 className="font-bold text-white mb-3">🔗 Query Pattern</h4>
                         <div className="bg-slate-950 rounded-lg p-4 mono text-xs text-slate-400">
                             <div><span className="text-green-400">-- Find all projects for Alice</span></div>
                             <div><span className="text-purple-400">SELECT</span> e.name, p.name, m.role</div>
@@ -291,7 +291,7 @@ const BridgeTableVisualizer = () => {
                 {/* Interview Tips */}
                 {hasBridge && (
                     <div className="mt-6 bg-emerald-900/20 border border-emerald-500/30 rounded-xl p-5 animate-slide">
-                        <h4 className="text-emerald-400 font-bold mb-3">🎉 Interview Talking Points</h4>
+                        <h4 className="text-emerald-400 font-bold mb-3">🎯 Interview Talking Points</h4>
                         <ul className="text-sm text-slate-300 space-y-2">
                             <li>• <strong>Bridge tables</strong> (also called junction/associative tables) resolve M:M relationships</li>
                             <li>• <strong>Composite primary key:</strong> (emp_id, proj_id) ensures unique combinations</li>
