@@ -9,6 +9,7 @@ import WindowSimulator from './components/WindowSimulator';
 import CaseSimulator from './components/CaseSimulator';
 import ReconSimulator from './components/ReconSimulator';
 import CostSimulator from './components/CostSimulator';
+import SCDSimulator from './components/SCDSimulator';
 
 export default function App() {
   const [currentView, setCurrentView] = useState<string>('menu');
@@ -58,6 +59,7 @@ export default function App() {
       {currentView === 'cte' && <CTESimulator onBack={goBack} />}
       {currentView === 'modeling' && <ModelingSimulator onBack={goBack} />}
       {currentView === 'indexing' && <IndexingSimulator onBack={goBack} />}
+      {currentView === 'scd' && <SCDSimulator onBack={goBack} />}
       {currentView === 'pruning' && <PruningSimulator onBack={goBack} />}
       {currentView === 'joins' && <JoinsSimulator onBack={goBack} />}
       {currentView === 'window' && <WindowSimulator onBack={goBack} />}

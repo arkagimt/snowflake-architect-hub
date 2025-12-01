@@ -2,6 +2,7 @@ import React from 'react';
 
 const MainMenu = ({ onNavigate }: { onNavigate: (view: string) => void }) => {
     const modules = [
+        { id: 'scd', title: 'SCD Types 1, 2, 3', desc: 'Slowly Changing Dimensions', icon: '🕰️', color: 'orange', status: 'ready' },
         { id: 'cte', title: 'Recursive CTEs', desc: 'BOM Hierarchy Explosion', icon: '🔄', color: 'orange', status: 'ready' },
         { id: 'modeling', title: 'Data Modeling', desc: 'OBT, Bridge Tables, Star', icon: '🗃️', color: 'purple', status: 'ready' },
         { id: 'indexing', title: 'Indexing Strategy', desc: 'B-Tree & Clustered', icon: '📊', color: 'green', status: 'ready' },
