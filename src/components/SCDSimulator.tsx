@@ -1,16 +1,17 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowRight, Database, Server, RefreshCw, Search, Clock, Terminal, Code, AlertTriangle, CheckCircle, ArrowLeftRight } from 'lucide-react';
+import { ArrowRight, Database, Server, RefreshCw, Search, Terminal, Code, AlertTriangle, CheckCircle, ArrowLeftRight, TrendingUp, Users, Info, HelpCircle } from 'lucide-react';
 
 // --- Types ---
 type ScdType = 'type1' | 'type2' | 'type3';
+type QueryExample = 'current' | 'asOf' | 'history' | null;
 
 interface CustomerRecord {
     surrogateKey: number;
     customerId: number;
     name: string;
     location: string;
-    prevLocation?: string; // For Type 3
+    prevLocation?: string;
     startDate: string;
     endDate: string | null;
     currentFlag: boolean;
@@ -28,105 +29,115 @@ const generateHash = (val: string) => {
     return Math.abs(hash).toString(16).substring(0, 8);
 };
 
+// Tooltip Component
+const Tooltip = ({ children, text }: { children: React.ReactNode; text: string }) => (
+    <div className="group relative inline-flex">
+        {children}
+        <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 bg-slate-800 text-[10px] text-slate-300 p-2 rounded border border-slate-700 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50">
+            {text}
+        </div>
+    </div>
+);
+
 const SCDSimulator = ({ onBack }: { onBack: () => void }) => {
     // --- State ---
     const [activeTab, setActiveTab] = useState<ScdType>('type2');
-    const [incomingLocation, setIncomingLocation] = useState('Mumbai');
-    const [step, setStep] = useState(0); // 0: Ready, 1: Scanning, 2: Diff Found, 3: Updating, 4: Done
-    const [sliderDate, setSliderDate] = useState(2025);
+    const [incomingLocation, setIncomingLocation] = useState('Austin, TX');
+    const [step, setStep] = useState(0);
     const [logs, setLogs] = useState<string[]>([]);
+    const [activeQuery, setActiveQuery] = useState<QueryExample>(null);
+    const [showComparison, setShowComparison] = useState(false);
 
-    // Initial Data (Realistic & Scaled)
-    const [tableData, setTableData] = useState<CustomerRecord[]>([
+    // Real-world E-commerce Data
+    const getInitialData = (): CustomerRecord[] => [
         {
-            surrogateKey: 100,
+            surrogateKey: 1001,
             customerId: 1,
-            name: 'Arka',
-            location: 'Bangalore',
+            name: 'Sarah Johnson',
+            location: 'New York, NY',
             prevLocation: '-',
-            startDate: '2020-01-01',
-            endDate: '2022-12-31',
+            startDate: '2020-01-15',
+            endDate: '2022-06-09',
             currentFlag: false,
-            hash: generateHash('Bangalore')
+            hash: generateHash('New York, NY')
         },
         {
-            surrogateKey: 101,
+            surrogateKey: 1002,
             customerId: 1,
-            name: 'Arka',
-            location: 'Delhi',
+            name: 'Sarah Johnson',
+            location: 'San Francisco, CA',
             prevLocation: '-',
-            startDate: '2023-01-01',
-            endDate: null,
-            currentFlag: true,
-            hash: generateHash('Delhi')
+            startDate: '2022-06-10',
+            endDate: '2024-11-04',
+            currentFlag: false,
+            hash: generateHash('San Francisco, CA')
         },
         {
-            surrogateKey: 201,
-            customerId: 2,
-            name: 'Pragg',
-            location: 'Pune',
+            surrogateKey: 1003,
+            customerId: 1,
+            name: 'Sarah Johnson',
+            location: 'Seattle, WA',
             prevLocation: '-',
-            startDate: '2024-01-01',
+            startDate: '2024-11-05',
             endDate: null,
             currentFlag: true,
-            hash: generateHash('Pune')
+            hash: generateHash('Seattle, WA')
+        },
+        {
+            surrogateKey: 2001,
+            customerId: 2,
+            name: 'Michael Chen',
+            location: 'Seattle, WA',
+            prevLocation: '-',
+            startDate: '2023-03-20',
+            endDate: null,
+            currentFlag: true,
+            hash: generateHash('Seattle, WA')
         }
-    ]);
+    ];
+
+    const [tableData, setTableData] = useState<CustomerRecord[]>(getInitialData());
 
     // Derived State
     const activeRow = tableData.find(r => r.customerId === 1 && r.currentFlag);
     const incomingHash = generateHash(incomingLocation);
     const isHashMatch = activeRow ? activeRow.hash === incomingHash : false;
 
-    // Filtered Data for Time Travel
-    const filteredData = activeTab === 'type2'
-        ? tableData.filter(row => {
-            const startYear = parseInt(row.startDate.split('-')[0]);
-            const endYear = row.endDate ? parseInt(row.endDate.split('-')[0]) : 9999;
-            return startYear <= sliderDate && endYear > sliderDate;
-        })
-        : tableData;
+    // Performance Metrics
+    const initialRowCount = 4;
+    const currentRowCount = tableData.length;
+    const storageGrowth = ((currentRowCount / initialRowCount - 1) * 100).toFixed(0);
+
+    // Filtered Data
+    const getFilteredData = () => {
+        if (activeTab !== 'type2') return tableData;
+
+        if (activeQuery === 'current') {
+            return tableData.filter(r => r.currentFlag);
+        } else if (activeQuery === 'asOf') {
+            const asOfDate = new Date('2022-01-01');
+            return tableData.filter(r => {
+                const start = new Date(r.startDate);
+                const end = r.endDate ? new Date(r.endDate) : new Date('9999-12-31');
+                return asOfDate >= start && asOfDate < end;
+            });
+        } else if (activeQuery === 'history') {
+            return tableData.filter(r => r.customerId === 1).sort((a, b) =>
+                new Date(a.startDate).getTime() - new Date(b.startDate).getTime()
+            );
+        }
+
+        return tableData;
+    };
+
+    const filteredData = getFilteredData();
 
     // --- Actions ---
     const resetSimulation = () => {
-        setTableData([
-            {
-                surrogateKey: 100,
-                customerId: 1,
-                name: 'Arka',
-                location: 'Bangalore',
-                prevLocation: '-',
-                startDate: '2020-01-01',
-                endDate: '2022-12-31',
-                currentFlag: false,
-                hash: generateHash('Bangalore')
-            },
-            {
-                surrogateKey: 101,
-                customerId: 1,
-                name: 'Arka',
-                location: 'Delhi',
-                prevLocation: '-',
-                startDate: '2023-01-01',
-                endDate: null,
-                currentFlag: true,
-                hash: generateHash('Delhi')
-            },
-            {
-                surrogateKey: 201,
-                customerId: 2,
-                name: 'Pragg',
-                location: 'Pune',
-                prevLocation: '-',
-                startDate: '2024-01-01',
-                endDate: null,
-                currentFlag: true,
-                hash: generateHash('Pune')
-            }
-        ]);
+        setTableData(getInitialData());
         setStep(0);
-        setSliderDate(2025);
         setLogs([]);
+        setActiveQuery(null);
     };
 
     const addLog = (msg: string) => {
@@ -136,6 +147,7 @@ const SCDSimulator = ({ onBack }: { onBack: () => void }) => {
     const runPipeline = () => {
         setStep(1);
         setLogs([]);
+        setActiveQuery(null);
         addLog(`[STEP 1] Scanning Source Stream for CustomerID: 1...`);
 
         setTimeout(() => {
@@ -171,7 +183,7 @@ const SCDSimulator = ({ onBack }: { onBack: () => void }) => {
 
         const newRowBase = {
             customerId: 1,
-            name: 'Arka',
+            name: 'Sarah Johnson',
             location: incomingLocation,
             hash: incomingHash
         };
@@ -192,13 +204,13 @@ const SCDSimulator = ({ onBack }: { onBack: () => void }) => {
                 );
                 const newRow: CustomerRecord = {
                     ...newRowBase,
-                    surrogateKey: Math.floor(Math.random() * 1000) + 1000,
+                    surrogateKey: Math.floor(Math.random() * 1000) + 3000,
                     startDate: newStartDate,
                     endDate: null,
                     currentFlag: true,
                     prevLocation: '-'
                 };
-                return [newRow, ...updatedOld].sort((a, b) => a.customerId - b.customerId || (b.currentFlag ? 1 : -1));
+                return [...updatedOld, newRow].sort((a, b) => a.customerId - b.customerId || (b.currentFlag ? 1 : -1));
             });
         } else if (activeTab === 'type3') {
             setTableData(prev => prev.map(row =>
@@ -216,19 +228,17 @@ const SCDSimulator = ({ onBack }: { onBack: () => void }) => {
 
     // --- SQL Generator with Syntax Highlighting ---
     const highlightSql = (sql: string) => {
-        const keywords = ['MERGE', 'INTO', 'USING', 'ON', 'WHEN', 'MATCHED', 'AND', 'THEN', 'UPDATE', 'SET', 'INSERT', 'VALUES', 'WHERE', 'TRUE', 'FALSE'];
+        const keywords = ['MERGE', 'INTO', 'USING', 'ON', 'WHEN', 'MATCHED', 'AND', 'THEN', 'UPDATE', 'SET', 'INSERT', 'VALUES', 'WHERE', 'TRUE', 'FALSE', 'SELECT', 'FROM', 'BETWEEN', 'COALESCE', 'ORDER', 'BY'];
         const functions = ['CURRENT_DATE'];
 
         return sql.split('\n').map((line, i) => {
             let highlightedLine = line;
 
-            // Highlight keywords
             keywords.forEach(keyword => {
                 const regex = new RegExp(`\\b${keyword}\\b`, 'g');
                 highlightedLine = highlightedLine.replace(regex, `<span class="text-cyan-400 font-semibold">${keyword}</span>`);
             });
 
-            // Highlight functions
             functions.forEach(func => {
                 const regex = new RegExp(`\\b${func}\\b`, 'g');
                 highlightedLine = highlightedLine.replace(regex, `<span class="text-purple-400">${func}()</span>`);
@@ -255,7 +265,7 @@ const SCDSimulator = ({ onBack }: { onBack: () => void }) => {
 
     return (
         <div className="flex flex-col h-screen bg-slate-950 text-slate-200 overflow-hidden font-sans selection:bg-blue-500/30">
-            {/* --- 1. Pipeline Header --- */}
+            {/* Pipeline Header */}
             <div className="h-20 bg-slate-900/80 backdrop-blur border-b border-slate-800 flex items-center justify-center relative shrink-0 z-30">
                 <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(#64748b 1px, transparent 1px)', backgroundSize: '16px 16px' }}></div>
 
@@ -264,7 +274,7 @@ const SCDSimulator = ({ onBack }: { onBack: () => void }) => {
                         <div className="w-10 h-10 rounded-lg bg-blue-500/20 border border-blue-500/50 flex items-center justify-center shadow-[0_0_15px_rgba(59,130,246,0.3)] group-hover:scale-110 transition-transform">
                             <Server className="text-blue-400" size={20} />
                         </div>
-                        <span className="text-[10px] font-mono text-blue-400 mt-1">CRM (Source)</span>
+                        <span className="text-[10px] font-mono text-blue-400 mt-1">CRM</span>
                     </div>
 
                     <svg className="w-32 h-8" viewBox="0 0 128 32">
@@ -283,11 +293,10 @@ const SCDSimulator = ({ onBack }: { onBack: () => void }) => {
                         <div className="w-10 h-10 rounded-lg bg-orange-500/20 border border-orange-500/50 flex items-center justify-center shadow-[0_0_15px_rgba(249,115,22,0.3)] group-hover:scale-110 transition-transform">
                             <ArrowLeftRight className="text-orange-400" size={20} />
                         </div>
-                        <span className="text-[10px] font-mono text-orange-400 mt-1">Stream (CDC)</span>
+                        <span className="text-[10px] font-mono text-orange-400 mt-1">Stream</span>
 
-                        {/* Tooltip */}
                         <div className="absolute top-12 w-48 bg-slate-800 text-[10px] text-slate-300 p-2 rounded border border-slate-700 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50">
-                            Decouples ingestion from processing. Captures changes (INSERT/UPDATE) automatically.
+                            Decouples ingestion from processing. Captures CDC (INSERT/UPDATE/DELETE).
                         </div>
                     </div>
 
@@ -317,8 +326,8 @@ const SCDSimulator = ({ onBack }: { onBack: () => void }) => {
             </div>
 
             <div className="flex flex-1 overflow-hidden">
-                {/* --- Left Panel: Controls & Diff Engine --- */}
-                <div className="w-80 bg-slate-900 border-r border-slate-800 flex flex-col p-4 gap-4 shrink-0 z-20 shadow-xl overflow-y-auto">
+                {/* Left Panel */}
+                <div className="w-96 bg-slate-900 border-r border-slate-800 flex flex-col p-4 gap-4 shrink-0 z-20 shadow-xl overflow-y-auto">
                     {/* Tab Switcher */}
                     <div className="flex bg-slate-950 p-1 rounded-lg border border-slate-800">
                         {(['type1', 'type2', 'type3'] as ScdType[]).map(type => (
@@ -336,27 +345,98 @@ const SCDSimulator = ({ onBack }: { onBack: () => void }) => {
                         ))}
                     </div>
 
+                    {/* SCD Comparison Toggle */}
+                    <button
+                        onClick={() => setShowComparison(!showComparison)}
+                        className="w-full py-2 bg-slate-800 hover:bg-slate-700 rounded-lg text-xs flex items-center justify-center gap-2 transition-colors border border-slate-700"
+                    >
+                        <Info size={14} />
+                        {showComparison ? 'Hide' : 'Show'} Type Comparison
+                    </button>
+
+                    {/* Comparison Matrix */}
+                    <AnimatePresence>
+                        {showComparison && (
+                            <motion.div
+                                initial={{ opacity: 0, height: 0 }}
+                                animate={{ opacity: 1, height: 'auto' }}
+                                exit={{ opacity: 0, height: 0 }}
+                                className="bg-slate-800/30 rounded-lg border border-slate-700 overflow-hidden"
+                            >
+                                <div className="p-3">
+                                    <div className="text-[10px] font-bold text-slate-400 uppercase mb-2">📊 Type Comparison</div>
+                                    <table className="w-full text-[10px]">
+                                        <thead>
+                                            <tr className="border-b border-slate-700">
+                                                <th className="text-left pb-1 text-slate-500">Feature</th>
+                                                <th className="text-center pb-1 text-slate-500">T1</th>
+                                                <th className="text-center pb-1 text-slate-500">T2</th>
+                                                <th className="text-center pb-1 text-slate-500">T3</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody className="text-slate-300">
+                                            <tr className="border-b border-slate-700/50">
+                                                <td className="py-1">History</td>
+                                                <td className="text-center">❌</td>
+                                                <td className="text-center">✅</td>
+                                                <td className="text-center">⚠️</td>
+                                            </tr>
+                                            <tr className="border-b border-slate-700/50">
+                                                <td className="py-1">Storage</td>
+                                                <td className="text-center text-green-400">Low</td>
+                                                <td className="text-center text-red-400">High</td>
+                                                <td className="text-center text-yellow-400">Med</td>
+                                            </tr>
+                                            <tr className="border-b border-slate-700/50">
+                                                <td className="py-1">Query</td>
+                                                <td className="text-center text-green-400">Simple</td>
+                                                <td className="text-center text-yellow-400">Medium</td>
+                                                <td className="text-center text-green-400">Simple</td>
+                                            </tr>
+                                            <tr>
+                                                <td className="py-1">Use Case</td>
+                                                <td className="text-center">Fix</td>
+                                                <td className="text-center">Audit</td>
+                                                <td className="text-center">Prev</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
+
                     {/* Incoming Data */}
                     <div className="bg-slate-800/50 rounded-lg border border-slate-700 p-3">
                         <div className="flex items-center justify-between mb-2">
                             <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Incoming Stream</span>
                             <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></div>
                         </div>
-                        <div>
-                            <label className="text-[10px] text-slate-500 uppercase block mb-1">Location Value</label>
-                            <input
-                                type="text"
-                                value={incomingLocation}
-                                onChange={(e) => {
-                                    setIncomingLocation(e.target.value);
-                                    if (step > 0) setStep(0);
-                                }}
-                                className="w-full bg-slate-950 p-2 rounded border border-slate-700 focus:border-blue-500 text-white font-mono text-xs outline-none"
-                            />
+                        <div className="space-y-2">
+                            <div>
+                                <label className="text-[10px] text-slate-500 uppercase block mb-1">Customer</label>
+                                <div className="bg-slate-900 p-2 rounded border border-slate-700 text-slate-300 text-xs flex items-center gap-2">
+                                    <Users size={12} className="text-blue-400" />
+                                    Sarah Johnson (ID: 1)
+                                </div>
+                            </div>
+                            <div>
+                                <label className="text-[10px] text-slate-500 uppercase block mb-1">New Address</label>
+                                <input
+                                    type="text"
+                                    value={incomingLocation}
+                                    onChange={(e) => {
+                                        setIncomingLocation(e.target.value);
+                                        if (step > 0) setStep(0);
+                                    }}
+                                    className="w-full bg-slate-950 p-2 rounded border border-slate-700 focus:border-blue-500 text-white font-mono text-xs outline-none"
+                                    placeholder="City, State"
+                                />
+                            </div>
                         </div>
                     </div>
 
-                    {/* --- Visual Diff Engine --- */}
+                    {/* Diff Engine */}
                     <div className="flex-1 min-h-[150px] relative">
                         <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2 flex items-center gap-2">
                             <Search size={12} /> Diff Engine
@@ -365,7 +445,6 @@ const SCDSimulator = ({ onBack }: { onBack: () => void }) => {
                         <div className={`bg-slate-950 rounded-lg border-2 p-3 relative overflow-hidden transition-colors duration-500
                              ${step === 2 && !isHashMatch ? 'border-red-500/50' : 'border-slate-800'}
                         `}>
-                            {/* Laser Scanner */}
                             {step === 1 && (
                                 <motion.div
                                     className="absolute left-0 right-0 h-0.5 bg-blue-400 shadow-[0_0_10px_#60a5fa] z-10"
@@ -377,7 +456,7 @@ const SCDSimulator = ({ onBack }: { onBack: () => void }) => {
                             <div className="space-y-3">
                                 <div>
                                     <div className="flex justify-between text-[10px] text-slate-500 mb-1">
-                                        <span>Incoming Hash</span>
+                                        <span>Incoming</span>
                                     </div>
                                     <div className="font-mono text-xs text-orange-400 bg-slate-900 p-1.5 rounded border border-slate-800 break-all">
                                         {incomingHash}
@@ -388,7 +467,7 @@ const SCDSimulator = ({ onBack }: { onBack: () => void }) => {
                                 </div>
                                 <div>
                                     <div className="flex justify-between text-[10px] text-slate-500 mb-1">
-                                        <span>Current Hash</span>
+                                        <span>Current</span>
                                     </div>
                                     <div className="font-mono text-xs text-slate-400 bg-slate-900 p-1.5 rounded border border-slate-800 break-all">
                                         {activeRow?.hash || 'NULL'}
@@ -413,7 +492,26 @@ const SCDSimulator = ({ onBack }: { onBack: () => void }) => {
                         </div>
                     </div>
 
-                    {/* Buttons */}
+                    {/* Performance Metrics */}
+                    <div className="bg-slate-800/30 rounded-lg border border-slate-700 p-3">
+                        <div className="flex items-center gap-2 text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">
+                            <TrendingUp size={12} /> Metrics
+                        </div>
+                        <div className="grid grid-cols-2 gap-2 text-xs">
+                            <div className="bg-slate-900 p-2 rounded">
+                                <div className="text-[10px] text-slate-500 mb-1">Rows</div>
+                                <div className="font-mono text-white">{currentRowCount}</div>
+                            </div>
+                            <div className="bg-slate-900 p-2 rounded">
+                                <div className="text-[10px] text-slate-500 mb-1">Growth</div>
+                                <div className={`font-mono ${parseInt(storageGrowth) > 0 ? 'text-yellow-400' : 'text-green-400'}`}>
+                                    {parseInt(storageGrowth) > 0 ? '+' : ''}{storageGrowth}%
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Action Buttons */}
                     <div className="mt-auto space-y-2">
                         {step === 0 && (
                             <button
@@ -443,15 +541,15 @@ const SCDSimulator = ({ onBack }: { onBack: () => void }) => {
                     </div>
                 </div>
 
-                {/* --- Center: Visualization Table --- */}
+                {/* Center: Table & Tips */}
                 <div className="flex-1 bg-slate-950 flex flex-col relative overflow-hidden">
-                    {/* Main Table Area */}
                     <div className="flex-1 p-6 overflow-y-auto">
                         <div className="flex items-center justify-between mb-4">
                             <div>
                                 <h2 className="text-xl font-bold text-white flex items-center gap-2">
                                     <Database size={18} className="text-slate-400" /> DIM_CUSTOMER
                                 </h2>
+                                <p className="text-xs text-slate-500">E-commerce Shipping Address Master</p>
                             </div>
                             <div className="flex gap-3">
                                 <div className="flex items-center gap-1.5 text-[10px] text-slate-400">
@@ -463,18 +561,85 @@ const SCDSimulator = ({ onBack }: { onBack: () => void }) => {
                             </div>
                         </div>
 
+                        {/* Query Examples */}
+                        {activeTab === 'type2' && (
+                            <div className="mb-4 bg-slate-900/50 rounded-xl border border-slate-800 p-3">
+                                <div className="text-xs font-bold text-slate-400 mb-2">📝 Interactive Queries</div>
+                                <div className="flex gap-2 flex-wrap">
+                                    <button
+                                        onClick={() => setActiveQuery('current')}
+                                        className={`px-3 py-1.5 rounded text-[10px] font-mono transition-all ${activeQuery === 'current'
+                                                ? 'bg-green-600 text-white'
+                                                : 'bg-slate-800 text-slate-400 hover:bg-slate-700'
+                                            }`}
+                                    >
+                                        CURRENT_FLAG = TRUE
+                                    </button>
+                                    <button
+                                        onClick={() => setActiveQuery('asOf')}
+                                        className={`px-3 py-1.5 rounded text-[10px] font-mono transition-all ${activeQuery === 'asOf'
+                                                ? 'bg-purple-600 text-white'
+                                                : 'bg-slate-800 text-slate-400 hover:bg-slate-700'
+                                            }`}
+                                    >
+                                        AS-OF '2022-01-01'
+                                    </button>
+                                    <button
+                                        onClick={() => setActiveQuery('history')}
+                                        className={`px-3 py-1.5 rounded text-[10px] font-mono transition-all ${activeQuery === 'history'
+                                                ? 'bg-blue-600 text-white'
+                                                : 'bg-slate-800 text-slate-400 hover:bg-slate-700'
+                                            }`}
+                                    >
+                                        Customer #1 History
+                                    </button>
+                                    <button
+                                        onClick={() => setActiveQuery(null)}
+                                        className="px-3 py-1.5 rounded text-[10px] font-mono bg-slate-800 text-slate-400 hover:bg-slate-700 transition-all"
+                                    >
+                                        Clear
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Table */}
                         <div className="bg-slate-900/50 rounded-xl border border-slate-800 overflow-hidden shadow-2xl">
                             <table className="w-full text-left border-collapse">
                                 <thead className="bg-slate-950 text-slate-400 text-[10px] uppercase tracking-wider border-b border-slate-800">
                                     <tr>
-                                        <th className="p-3 font-medium">SK</th>
+                                        <th className="p-3 font-medium">
+                                            <Tooltip text="Auto-incremented surrogate key. Use this for relationships, not the natural key!">
+                                                <div className="flex items-center gap-1 cursor-help">
+                                                    SK <HelpCircle size={10} className="text-slate-500" />
+                                                </div>
+                                            </Tooltip>
+                                        </th>
                                         <th className="p-3 font-medium">ID</th>
                                         <th className="p-3 font-medium">Name</th>
-                                        <th className="p-3 font-medium">Location</th>
-                                        {activeTab === 'type3' && <th className="p-3 font-medium text-blue-400">Prev_Loc</th>}
-                                        <th className="p-3 font-medium">Start_Date</th>
-                                        <th className="p-3 font-medium">End_Date</th>
-                                        <th className="p-3 font-medium">Current</th>
+                                        <th className="p-3 font-medium">Address</th>
+                                        {activeTab === 'type3' && <th className="p-3 font-medium text-blue-400">Prev_Addr</th>}
+                                        <th className="p-3 font-medium">
+                                            <Tooltip text="Date this version became effective. Use for BETWEEN queries.">
+                                                <div className="flex items-center gap-1 cursor-help">
+                                                    Start <HelpCircle size={10} className="text-slate-500" />
+                                                </div>
+                                            </Tooltip>
+                                        </th>
+                                        <th className="p-3 font-medium">
+                                            <Tooltip text="NULL = current row. Otherwise, the date this version expired.">
+                                                <div className="flex items-center gap-1 cursor-help">
+                                                    End <HelpCircle size={10} className="text-slate-500" />
+                                                </div>
+                                            </Tooltip>
+                                        </th>
+                                        <th className="p-3 font-medium">
+                                            <Tooltip text="Boolean flag for fast 'latest' queries. Index this column!">
+                                                <div className="flex items-center gap-1 cursor-help">
+                                                    Current <HelpCircle size={10} className="text-slate-500" />
+                                                </div>
+                                            </Tooltip>
+                                        </th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-slate-800/50">
@@ -534,15 +699,34 @@ const SCDSimulator = ({ onBack }: { onBack: () => void }) => {
                                     </AnimatePresence>
                                 </tbody>
                             </table>
+
+                            {filteredData.length === 0 && (
+                                <div className="flex flex-col items-center justify-center h-32 text-slate-500">
+                                    <Database size={32} className="mb-2 opacity-20" />
+                                    <p className="text-xs">No records match the filter</p>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Interview Tips */}
+                        <div className="mt-6 bg-yellow-900/20 border border-yellow-500/30 rounded-xl p-5">
+                            <h4 className="text-yellow-400 font-bold mb-3">🎯 Interview Talking Points</h4>
+                            <ul className="text-xs text-slate-300 space-y-2 leading-relaxed">
+                                <li>• <strong className="text-yellow-300">Type 1:</strong> "Use for correcting data quality issues—like fixing typos. History not preserved."</li>
+                                <li>• <strong className="text-yellow-300">Type 2:</strong> "Query 'current' with <code className="bg-slate-800 px-1 py-0.5 rounded text-cyan-400">CURRENT_FLAG = TRUE</code>, or use <code className="bg-slate-800 px-1 py-0.5 rounded text-purple-400">BETWEEN</code> for point-in-time queries."</li>
+                                <li>• <strong className="text-yellow-300">Type 3:</strong> "Perfect when you only need Current vs Previous (e.g., Q4 vs Q3 sales region)."</li>
+                                <li>• <strong className="text-yellow-300">Performance:</strong> "Type 2 grows unbounded—partition by year or implement archival."</li>
+                                <li>• <strong className="text-yellow-300">Late-Arriving Facts:</strong> "Handle with surrogate keys + 'inferred members' (SK = -1)."</li>
+                            </ul>
                         </div>
                     </div>
 
-                    {/* --- Bottom Panels (Glass Box) --- */}
+                    {/* Bottom Panels */}
                     <div className="h-48 border-t border-slate-800 bg-slate-900/80 flex">
-                        {/* System Execution Log */}
+                        {/* Logs */}
                         <div className="flex-1 border-r border-slate-800 p-4 font-mono text-xs overflow-y-auto">
                             <div className="flex items-center gap-2 text-slate-400 mb-2 sticky top-0 bg-slate-900/80 backdrop-blur pb-2 border-b border-slate-800/50">
-                                <Terminal size={12} /> System Execution Log
+                                <Terminal size={12} /> System Log
                             </div>
                             <div className="space-y-1">
                                 <AnimatePresence>
@@ -561,12 +745,12 @@ const SCDSimulator = ({ onBack }: { onBack: () => void }) => {
                                             {log}
                                         </motion.div>
                                     ))}
-                                    {logs.length === 0 && <span className="text-slate-600 italic">Waiting for pipeline trigger...</span>}
+                                    {logs.length === 0 && <span className="text-slate-600 italic">Waiting for pipeline...</span>}
                                 </AnimatePresence>
                             </div>
                         </div>
 
-                        {/* SQL Internals */}
+                        {/* SQL */}
                         <div className="flex-1 p-4 font-mono text-xs overflow-y-auto bg-slate-950">
                             <div className="flex items-center gap-2 text-slate-400 mb-2 sticky top-0 bg-slate-950 pb-2 border-b border-slate-800/50">
                                 <Code size={12} /> SQL Internals
