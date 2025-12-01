@@ -11,6 +11,7 @@ import ReconSimulator from './components/ReconSimulator';
 import CostSimulator from './components/CostSimulator';
 import SCDSimulator from './components/SCDSimulator';
 import QueryProfileVisualizer from './components/QueryProfileVisualizer';
+import ConcurrencySimulator from './components/ConcurrencySimulator';
 
 export default function App() {
   const [currentView, setCurrentView] = useState<string>('menu');
@@ -68,6 +69,7 @@ export default function App() {
       {currentView === 'recon' && <ReconSimulator onBack={goBack} />}
       {currentView === 'cost' && <CostSimulator onBack={goBack} />}
       {currentView === 'queryprofile' && <QueryProfileVisualizer onBack={goBack} />}
+      {currentView === 'concurrency' && <ConcurrencySimulator onBack={goBack} />}
     </>
   );
 }

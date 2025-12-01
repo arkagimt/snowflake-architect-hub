@@ -3,6 +3,7 @@ import React from 'react';
 const MainMenu = ({ onNavigate }: { onNavigate: (view: string) => void }) => {
     const modules = [
         { id: 'queryprofile', title: 'Query Profile Analyzer', desc: 'Skew, Spilling, ASOF Joins', icon: '📈', color: 'red', status: 'ready' },
+        { id: 'concurrency', title: 'Concurrency & ACID', desc: 'MVCC, Locking, Deadlocks', icon: '🔒', color: 'violet', status: 'ready' },
         { id: 'scd', title: 'SCD Types 1, 2, 3', desc: 'Slowly Changing Dimensions', icon: '🕰️', color: 'orange', status: 'ready' },
         { id: 'cte', title: 'Recursive CTEs', desc: 'BOM Hierarchy Explosion', icon: '🔄', color: 'orange', status: 'ready' },
         { id: 'modeling', title: 'Data Modeling', desc: 'OBT, Bridge Tables, Star', icon: '🗃️', color: 'purple', status: 'ready' },
@@ -17,6 +18,7 @@ const MainMenu = ({ onNavigate }: { onNavigate: (view: string) => void }) => {
 
     const colorClasses: Record<string, { border: string; shadow: string; text: string; bg: string }> = {
         red: { border: 'hover:border-red-500/50', shadow: 'hover:shadow-red-500/10', text: 'text-red-400', bg: 'bg-red-500/20' },
+        violet: { border: 'hover:border-violet-500/50', shadow: 'hover:shadow-violet-500/10', text: 'text-violet-400', bg: 'bg-violet-500/20' },
         orange: { border: 'hover:border-orange-500/50', shadow: 'hover:shadow-orange-500/10', text: 'text-orange-400', bg: 'bg-orange-500/20' },
         purple: { border: 'hover:border-purple-500/50', shadow: 'hover:shadow-purple-500/10', text: 'text-purple-400', bg: 'bg-purple-500/20' },
         green: { border: 'hover:border-green-500/50', shadow: 'hover:shadow-green-500/10', text: 'text-green-400', bg: 'bg-green-500/20' },
@@ -38,7 +40,7 @@ const MainMenu = ({ onNavigate }: { onNavigate: (view: string) => void }) => {
                 <h1 className="text-4xl font-bold text-white mb-3">Snowflake Data Architect Hub</h1>
                 <p className="text-slate-400 text-lg">Interactive SQL & Data Engineering Simulators</p>
                 <div className="mt-4 flex items-center justify-center gap-2 text-sm text-slate-500">
-                    <span className="px-3 py-1 bg-slate-800 rounded-full">11 Modules</span>
+                    <span className="px-3 py-1 bg-slate-800 rounded-full">12 Modules</span>
                     <span className="px-3 py-1 bg-slate-800 rounded-full">Interview Prep</span>
                     <span className="px-3 py-1 bg-slate-800 rounded-full">Step-by-Step</span>
                 </div>
