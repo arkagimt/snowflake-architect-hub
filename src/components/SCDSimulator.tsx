@@ -184,15 +184,16 @@ const SCDSimulator = ({ onBack }: { onBack: () => void }) => {
             ));
         } else if (activeTab === 'type2') {
             setTableData(prev => {
+                const newStartDate = '2025-01-01';
                 const updatedOld = prev.map(row =>
                     row.surrogateKey === activeRow.surrogateKey
-                        ? { ...row, endDate: '2025-01-01', currentFlag: false }
+                        ? { ...row, endDate: newStartDate, currentFlag: false }
                         : row
                 );
                 const newRow: CustomerRecord = {
                     ...newRowBase,
                     surrogateKey: Math.floor(Math.random() * 1000) + 1000,
-                    startDate: '2025-01-01',
+                    startDate: newStartDate,
                     endDate: null,
                     currentFlag: true,
                     prevLocation: '-'
@@ -213,7 +214,30 @@ const SCDSimulator = ({ onBack }: { onBack: () => void }) => {
         }
     };
 
-    // --- SQL Generator ---
+    // --- SQL Generator with Syntax Highlighting ---
+    const highlightSql = (sql: string) => {
+        const keywords = ['MERGE', 'INTO', 'USING', 'ON', 'WHEN', 'MATCHED', 'AND', 'THEN', 'UPDATE', 'SET', 'INSERT', 'VALUES', 'WHERE', 'TRUE', 'FALSE'];
+        const functions = ['CURRENT_DATE'];
+
+        return sql.split('\n').map((line, i) => {
+            let highlightedLine = line;
+
+            // Highlight keywords
+            keywords.forEach(keyword => {
+                const regex = new RegExp(`\\b${keyword}\\b`, 'g');
+                highlightedLine = highlightedLine.replace(regex, `<span class="text-cyan-400 font-semibold">${keyword}</span>`);
+            });
+
+            // Highlight functions
+            functions.forEach(func => {
+                const regex = new RegExp(`\\b${func}\\b`, 'g');
+                highlightedLine = highlightedLine.replace(regex, `<span class="text-purple-400">${func}()</span>`);
+            });
+
+            return <div key={i} className={line.startsWith('--') ? 'text-slate-500 italic' : ''} dangerouslySetInnerHTML={{ __html: highlightedLine }} />;
+        });
+    };
+
     const getSql = () => {
         if (step === 0) return "-- Ready to process incoming stream...";
 
@@ -243,13 +267,17 @@ const SCDSimulator = ({ onBack }: { onBack: () => void }) => {
                         <span className="text-[10px] font-mono text-blue-400 mt-1">CRM (Source)</span>
                     </div>
 
-                    <div className="w-32 h-1 bg-slate-800 rounded-full relative overflow-hidden">
-                        <motion.div
-                            className="absolute inset-0 bg-gradient-to-r from-transparent via-green-500 to-transparent opacity-50"
-                            animate={step >= 1 && step < 4 ? { x: ['-100%', '100%'] } : { x: '-100%' }}
-                            transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
+                    <svg className="w-32 h-8" viewBox="0 0 128 32">
+                        <motion.line
+                            x1="0" y1="16" x2="128" y2="16"
+                            stroke="#22c55e"
+                            strokeWidth="2"
+                            strokeDasharray="8 4"
+                            animate={step >= 1 && step < 4 ? { strokeDashoffset: [0, -12] } : { strokeDashoffset: 0 }}
+                            transition={{ repeat: Infinity, duration: 0.8, ease: "linear" }}
                         />
-                    </div>
+                        <line x1="0" y1="16" x2="128" y2="16" stroke="#1e293b" strokeWidth="1" />
+                    </svg>
 
                     <div className="flex flex-col items-center group cursor-help relative">
                         <div className="w-10 h-10 rounded-lg bg-orange-500/20 border border-orange-500/50 flex items-center justify-center shadow-[0_0_15px_rgba(249,115,22,0.3)] group-hover:scale-110 transition-transform">
@@ -263,13 +291,17 @@ const SCDSimulator = ({ onBack }: { onBack: () => void }) => {
                         </div>
                     </div>
 
-                    <div className="w-32 h-1 bg-slate-800 rounded-full relative overflow-hidden">
-                        <motion.div
-                            className="absolute inset-0 bg-gradient-to-r from-transparent via-green-500 to-transparent opacity-50"
-                            animate={step >= 3 && step < 4 ? { x: ['-100%', '100%'] } : { x: '-100%' }}
-                            transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
+                    <svg className="w-32 h-8" viewBox="0 0 128 32">
+                        <motion.line
+                            x1="0" y1="16" x2="128" y2="16"
+                            stroke="#22c55e"
+                            strokeWidth="2"
+                            strokeDasharray="8 4"
+                            animate={step >= 3 && step < 4 ? { strokeDashoffset: [0, -12] } : { strokeDashoffset: 0 }}
+                            transition={{ repeat: Infinity, duration: 0.8, ease: "linear" }}
                         />
-                    </div>
+                        <line x1="0" y1="16" x2="128" y2="16" stroke="#1e293b" strokeWidth="1" />
+                    </svg>
 
                     <div className="flex flex-col items-center group">
                         <div className="w-10 h-10 rounded-lg bg-purple-500/20 border border-purple-500/50 flex items-center justify-center shadow-[0_0_15px_rgba(168,85,247,0.3)] group-hover:scale-110 transition-transform">
@@ -539,13 +571,9 @@ const SCDSimulator = ({ onBack }: { onBack: () => void }) => {
                             <div className="flex items-center gap-2 text-slate-400 mb-2 sticky top-0 bg-slate-950 pb-2 border-b border-slate-800/50">
                                 <Code size={12} /> SQL Internals
                             </div>
-                            <pre className="text-slate-300 whitespace-pre-wrap leading-relaxed">
-                                {getSql().split('\n').map((line, i) => (
-                                    <div key={i} className={line.startsWith('--') ? 'text-slate-500 italic' : ''}>
-                                        {line}
-                                    </div>
-                                ))}
-                            </pre>
+                            <div className="text-slate-300 whitespace-pre-wrap leading-relaxed">
+                                {highlightSql(getSql())}
+                            </div>
                         </div>
                     </div>
                 </div>
