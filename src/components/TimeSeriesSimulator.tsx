@@ -211,12 +211,12 @@ const TimeSeriesSimulator = ({ onBack }: { onBack: () => void }) => {
 
         if (currentBucket.value !== null) {
             // Has value - just copy it
-            setFilledBuckets(prev => [...prev, { ...currentBucket, filled: currentBucket.value }]);
+            setFilledBuckets(prev => [...prev, { ...currentBucket, filled: currentBucket.value ?? undefined }]);
             setGapInsight(`✅ Bucket ${nextPos}: Contains value (${currentBucket.value}). No filling needed.`);
         } else {
             // NULL - needs filling
             if (fillMethod === 'lastvalue') {
-                const lastValue = filledBuckets[filledBuckets.length - 1]?.filled || null;
+                const lastValue = filledBuckets[filledBuckets.length - 1]?.filled;
                 setShowPipe(true);
 
                 setTimeout(() => {
@@ -250,7 +250,7 @@ const TimeSeriesSimulator = ({ onBack }: { onBack: () => void }) => {
                         setGapInsight(`🌉 Bucket ${nextPos}: Linear bridge built! Interpolate: ${lastValue} → ${nextValue}. Calculated: ${interpolated}`);
                     }, 500);
                 } else {
-                    setFilledBuckets(prev => [...prev, { ...currentBucket, filled: lastValue || null, synthetic: false }]);
+                    setFilledBuckets(prev => [...prev, { ...currentBucket, filled: lastValue, synthetic: false }]);
                     setGapInsight(`⚠️ Bucket ${nextPos}: Cannot interpolate (missing future value). Fallback to last value.`);
                 }
             }
@@ -393,10 +393,9 @@ const TimeSeriesSimulator = ({ onBack }: { onBack: () => void }) => {
                                                     x: idx === currentTradeIndex ? 10 : 0,
                                                     scale: idx === currentTradeIndex ? 1.08 : 1
                                                 }}
-                                                className={`p-3 rounded-lg border-2 transition-all relative ${
-                                                    idx === currentTradeIndex
-                                                        ? 'bg-orange-500/30 border-orange-400'
-                                                        : 'bg-slate-800/50 border-slate-700'
+                                                className={`p-3 rounded-lg border-2 transition-all relative ${idx === currentTradeIndex
+                                                    ? 'bg-orange-500/30 border-orange-400'
+                                                    : 'bg-slate-800/50 border-slate-700'
                                                     }`}
                                                 style={idx === currentTradeIndex ? {
                                                     boxShadow: '0 0 30px rgba(251, 146, 60, 0.7), 0 0 60px rgba(251, 146, 60, 0.4)',
@@ -414,7 +413,7 @@ const TimeSeriesSimulator = ({ onBack }: { onBack: () => void }) => {
                                                 <div className="text-xs text-slate-400 flex items-center justify-between">
                                                     <span>T{trade.id}</span>
                                                     {idx === currentTradeIndex && (
-                                                        <motion.span 
+                                                        <motion.span
                                                             animate={{ opacity: [0.7, 1, 0.7] }}
                                                             transition={{ repeat: Infinity, duration: 1 }}
                                                             className="text-orange-400 font-bold text-[9px] uppercase flex items-center gap-1"
@@ -424,9 +423,8 @@ const TimeSeriesSimulator = ({ onBack }: { onBack: () => void }) => {
                                                         </motion.span>
                                                     )}
                                                 </div>
-                                                <div className={`text-sm font-mono font-bold ${
-                                                    idx === currentTradeIndex ? 'text-orange-300' : 'text-white'
-                                                }`}>
+                                                <div className={`text-sm font-mono font-bold ${idx === currentTradeIndex ? 'text-orange-300' : 'text-white'
+                                                    }`}>
                                                     {trade.timestamp}
                                                 </div>
                                                 <div className="text-xs text-slate-300">${trade.price}</div>
@@ -518,9 +516,9 @@ const TimeSeriesSimulator = ({ onBack }: { onBack: () => void }) => {
                                                 }}
                                                 transition={{ type: 'spring', stiffness: 300 }}
                                                 className={`p-3 rounded-lg border-2 ${quote.id === rejectedQuoteId ? 'bg-red-500/20 border-red-500' :
-                                                        quote.id === selectedQuoteId ? 'bg-green-500/20 border-green-500 shadow-lg shadow-green-500/30' :
-                                                            idx === scannerPosition ? 'bg-cyan-500/20 border-cyan-500' :
-                                                                'bg-slate-800/50 border-slate-700'
+                                                    quote.id === selectedQuoteId ? 'bg-green-500/20 border-green-500 shadow-lg shadow-green-500/30' :
+                                                        idx === scannerPosition ? 'bg-cyan-500/20 border-cyan-500' :
+                                                            'bg-slate-800/50 border-slate-700'
                                                     }`}
                                             >
                                                 <div className="text-xs text-slate-400">Q{quote.id}</div>
@@ -694,14 +692,14 @@ const TimeSeriesSimulator = ({ onBack }: { onBack: () => void }) => {
                                                     )}
 
                                                     {/* Filled Value - Green (Last Value) or Orange (Interpolated) */}
-                                                    {filled && filled.filled !== null && bucket.value === null && (
+                                                    {filled && filled.filled !== undefined && bucket.value === null && (
                                                         <motion.div
                                                             initial={{ height: 0 }}
-                                                            animate={{ height: `${(filled.filled / 100) * 100}%` }}
+                                                            animate={{ height: `${(filled.filled! / 100) * 100}%` }}
                                                             transition={{ type: 'spring', stiffness: 120, damping: 15 }}
                                                             className={`absolute bottom-0 w-full ${filled.synthetic
-                                                                    ? 'bg-gradient-to-t from-orange-600 to-orange-400'
-                                                                    : 'bg-gradient-to-t from-green-600 to-green-400'
+                                                                ? 'bg-gradient-to-t from-orange-600 to-orange-400'
+                                                                : 'bg-gradient-to-t from-green-600 to-green-400'
                                                                 }`}
                                                         />
                                                     )}
