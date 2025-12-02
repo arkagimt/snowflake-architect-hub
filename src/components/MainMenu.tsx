@@ -6,6 +6,8 @@ const MainMenu = ({ onNavigate }: { onNavigate: (view: string) => void }) => {
         { id: 'concurrency', title: 'Concurrency & ACID', desc: 'MVCC, Locking, Deadlocks', icon: '🔒', color: 'violet', status: 'ready' },
         { id: 'ingestion', title: 'Data Ingestion Methods', desc: 'Bulk, Snowpipe, Streaming', icon: '💧', color: 'indigo', status: 'ready' },
         { id: 'scd', title: 'SCD Types 1, 2, 3', desc: 'Slowly Changing Dimensions', icon: '🕰️', color: 'orange', status: 'ready' },
+        { id: 'timeseries', title: 'Time Series Analysis', desc: 'ASOF JOIN, Gap Filling', icon: '⏰', color: 'blue', status: 'ready' },
+        { id: 'security', title: 'Security & Governance', desc: 'Masking, Row Access Policy', icon: '🛡️', color: 'red', status: 'ready' },
         { id: 'cte', title: 'Recursive CTEs', desc: 'BOM Hierarchy Explosion', icon: '🔄', color: 'orange', status: 'ready' },
         { id: 'modeling', title: 'Data Modeling', desc: 'OBT, Bridge Tables, Star', icon: '🗃️', color: 'purple', status: 'ready' },
         { id: 'indexing', title: 'Indexing Strategy', desc: 'B-Tree & Clustered', icon: '📊', color: 'green', status: 'ready' },
@@ -42,7 +44,7 @@ const MainMenu = ({ onNavigate }: { onNavigate: (view: string) => void }) => {
                 <h1 className="text-4xl font-bold text-white mb-3">Snowflake Data Architect Hub</h1>
                 <p className="text-slate-400 text-lg">Interactive SQL & Data Engineering Simulators</p>
                 <div className="mt-4 flex items-center justify-center gap-2 text-sm text-slate-500">
-                    <span className="px-3 py-1 bg-slate-800 rounded-full">13 Modules</span>
+                    <span className="px-3 py-1 bg-slate-800 rounded-full">15 Modules</span>
                     <span className="px-3 py-1 bg-slate-800 rounded-full">Interview Prep</span>
                     <span className="px-3 py-1 bg-slate-800 rounded-full">Step-by-Step</span>
                 </div>

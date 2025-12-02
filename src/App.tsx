@@ -13,6 +13,8 @@ import SCDSimulator from './components/SCDSimulator';
 import QueryProfileVisualizer from './components/QueryProfileVisualizer';
 import ConcurrencySimulator from './components/ConcurrencySimulator';
 import IngestionSimulator from './components/IngestionSimulator';
+import TimeSeriesSimulator from './components/TimeSeriesSimulator';
+import SecuritySimulator from './components/SecuritySimulator';
 
 export default function App() {
   const [currentView, setCurrentView] = useState<string>('menu');
@@ -72,6 +74,8 @@ export default function App() {
       {currentView === 'queryprofile' && <QueryProfileVisualizer onBack={goBack} />}
       {currentView === 'concurrency' && <ConcurrencySimulator onBack={goBack} />}
       {currentView === 'ingestion' && <IngestionSimulator onBack={goBack} />}
+      {currentView === 'timeseries' && <TimeSeriesSimulator onBack={goBack} />}
+      {currentView === 'security' && <SecuritySimulator onBack={goBack} />}
     </>
   );
 }
